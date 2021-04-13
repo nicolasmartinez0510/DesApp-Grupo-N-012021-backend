@@ -7,6 +7,7 @@ plugins {
 	kotlin("jvm") version "1.4.31"
 	kotlin("plugin.spring") version "1.4.31"
 	kotlin("plugin.jpa") version "1.4.31"
+	jacoco
 }
 
 group = "ar.edu.unq.grupoN"
@@ -40,4 +41,19 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.test {
+	finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+tasks.jacocoTestReport {
+	dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+tasks.jacocoTestReport {
+	reports {
+		xml.isEnabled = true
+		csv.isEnabled = false
+		html.destination = layout.buildDirectory.dir("jacocoHtml").get().asFile
+	}
 }
