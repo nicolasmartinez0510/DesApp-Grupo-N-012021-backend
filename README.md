@@ -1,2 +1,3 @@
 [![Build Status](https://travis-ci.com/nicolasmartinez0510/DesApp-Grupo-N-012021-backend.svg?branch=main)](https://travis-ci.com/nicolasmartinez0510/DesApp-Grupo-N-012021-backend)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=nicolasmartinez0510_DesApp-Grupo-N-012021-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=nicolasmartinez0510_DesApp-Grupo-N-012021-backend)
 # DesApp-Grupo-N-012021-backend
