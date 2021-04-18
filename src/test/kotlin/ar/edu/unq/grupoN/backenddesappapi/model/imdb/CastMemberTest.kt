@@ -1,4 +1,4 @@
-package ar.edu.unq.grupoN.backenddesappapi.model
+package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
