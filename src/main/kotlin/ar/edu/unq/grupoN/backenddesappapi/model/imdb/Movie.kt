@@ -1,4 +1,4 @@
-package ar.edu.unq.grupoN.backenddesappapi.model
+package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 class Movie(
     titleId: String,

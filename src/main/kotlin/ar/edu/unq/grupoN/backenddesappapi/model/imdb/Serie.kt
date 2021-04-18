@@ -1,4 +1,4 @@
-package ar.edu.unq.grupoN.backenddesappapi.model
+package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 class Serie(
     titleId: String,
@@ -22,8 +22,10 @@ class Serie(
     averageRating: Double,
     numVotes: Int,
     val endYear: Int?,
-    val seasonNumber: Int,
-    val episodeNumber: Int
+    val seasons: List<Season>,
 ) : CinematographicContent(titleId, ordering, title, region, language, types, attributes,
     isOriginalTitle, titleType, primaryTitle, originalTitle, isAdult, startYear, runtimeMinutes,
-    genres, directors, writers, actors, averageRating, numVotes)
+    genres, directors, writers, actors, averageRating, numVotes){
+
+    override fun isSerie() = true
+}

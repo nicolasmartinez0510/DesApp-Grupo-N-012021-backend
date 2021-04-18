@@ -21,3 +21,6 @@ deploy:
   - provider: heroku
     api_key: b61af778-d3d6-4f54-a902-bdb3e442c0d3
     app: desapp-grupo-n-012021-backend
+    on:
+      all_branches: true
+      condition: $TRAVIS_BRANCH =~ ^(main|development)$

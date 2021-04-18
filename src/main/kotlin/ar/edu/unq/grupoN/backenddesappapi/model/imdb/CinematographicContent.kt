@@ -1,4 +1,4 @@
-package ar.edu.unq.grupoN.backenddesappapi.model
+package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 open class CinematographicContent(
     val titleId: String,
@@ -21,4 +21,6 @@ open class CinematographicContent(
     val actors: List<CastMember>,
     val averageRating: Double,
     val numVotes: Int
-)
+){
+    open fun isSerie() = false
+}
