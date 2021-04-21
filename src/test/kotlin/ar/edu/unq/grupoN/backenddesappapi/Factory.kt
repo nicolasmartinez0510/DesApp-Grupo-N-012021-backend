@@ -38,19 +38,17 @@ class Factory {
     fun spartacus_serie(): Serie {
         val seasons = Season(2, listOf(Episode(1)))
 
-        return Serie("SPTKSukq4sk893", ordering, "Spartacus", region, language, types, attributes,
-                isOriginalTitle, titleType, "Spartacus", "Spartacus", isAdult, 2010, runtimeMinutes,
+        return Serie("SPTKSukq4sk893", "Spartacus", types,titleType,isAdult, 2010, runtimeMinutes,
                 genres, directors, writers, actors, averageRating, numVotes, 2013, listOf(seasons))
     }
 
     fun gladiator_movie(): Movie {
-        return Movie(titleId, ordering, title, region, language, types, attributes,
-            isOriginalTitle, titleType, primaryTitle, originalTitle, isAdult, startYear, runtimeMinutes,
+        return Movie(titleId, title, types, titleType, isAdult, startYear, runtimeMinutes,
             genres, directors, writers, actors, averageRating, numVotes)
     }
 
     fun genericCastMember() = CastMember("Russell Crowe", "Actor",
-        null, "Maximus", 9999, 9999, listOf())
+        null, "Maximus", 9999, 9999)
 
 
     //Objects variables

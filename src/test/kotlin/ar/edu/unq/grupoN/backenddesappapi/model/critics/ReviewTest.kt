@@ -59,6 +59,26 @@ class ReviewTest {
         assertThat(review.reviewerId).isEqualTo(reviewerId)
     }
 
+//    @Test
+//    fun `a public new review recieve a like and now have a one valoration more`(){
+//        val review = factory.public_review_on(factory.gladiator_movie(), Rating.THREE, IsAChapterReview.ISAMOVIE)
+//        review.rate(Valorations.LIKE)
+//
+//        assertThat(review.valorations).isEqualTo(1)
+//
+//    }
+//
+//    @Test
+//    fun `a public review receive dislike and now have one less valoration`() {
+//        val review = factory.public_review_on(factory.gladiator_movie(), Rating.THREE, IsAChapterReview.ISAMOVIE)
+//        review.rate(Valorations.LIKE)
+//
+//        review.rate(Valorations.DISLIKE)
+//
+//        assertThat(review.valorations).isEqualTo(0)
+//    }
+
+
     private val resumeText = "Lorem Ipsum has been the industry's standard dummy"
     private val text = "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
     private val date = LocalDateTime.of(2018,10,15,23,16)

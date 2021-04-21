@@ -1,17 +1,15 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
+import javax.persistence.Entity
+import javax.persistence.PrimaryKeyJoinColumn
+
+@Entity
+@PrimaryKeyJoinColumn(name="titleId")
 class Movie(
     titleId: String,
-    ordering: Int,
     title: String,
-    region: String,
-    language: String,
     types: List<String>,
-    attributes: List<String>,
-    isOriginalTitle: Boolean,
     titleType: String,
-    primaryTitle: String,
-    originalTitle: String,
     isAdult: Boolean,
     startYear: Int,
     runtimeMinutes: Int,
@@ -22,6 +20,5 @@ class Movie(
     averageRating: Double,
     numVotes: Int
 ) :
-    CinematographicContent(titleId, ordering, title, region, language, types, attributes,
-    isOriginalTitle, titleType, primaryTitle, originalTitle, isAdult, startYear, runtimeMinutes,
+    CinematographicContent(titleId, title, titleType,isAdult, types, startYear, runtimeMinutes,
     genres, directors, writers, actors, averageRating, numVotes)

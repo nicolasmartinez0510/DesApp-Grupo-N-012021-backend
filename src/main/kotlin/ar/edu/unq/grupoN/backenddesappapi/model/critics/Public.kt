@@ -2,7 +2,12 @@ package ar.edu.unq.grupoN.backenddesappapi.model.critics
 
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import java.time.LocalDateTime
+import javax.persistence.Entity
+import javax.persistence.PrimaryKeyJoinColumn
 
+
+@Entity
+@PrimaryKeyJoinColumn(name="id")
 class Public(
     cinematographicContent: CinematographicContent,
     resumeText: String,

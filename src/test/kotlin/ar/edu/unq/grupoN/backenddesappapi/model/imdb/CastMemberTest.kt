@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test
 class CastMemberTest {
 
     val norman = CastMember("Maaya Uchida", "Actor",
-        "Voice Actor", "Norman", 9999, null, listOf("Voice Actor"))
+        "Voice Actor", "Norman", 9999, null)
 
     @Test
     fun `a cast member know IMDb information`(){
@@ -18,7 +18,6 @@ class CastMemberTest {
         assertThat(norman.birthYear).isEqualTo(9999)
         assertThat(norman.deathYear).isNull()
         assertThat(norman.character).isEqualTo("Norman")
-        assertThat(norman.primaryProfession).containsExactly("Voice Actor")
     }
 
 }

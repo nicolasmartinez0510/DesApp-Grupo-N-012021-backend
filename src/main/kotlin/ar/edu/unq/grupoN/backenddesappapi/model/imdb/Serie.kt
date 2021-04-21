@@ -1,17 +1,14 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
+import javax.persistence.*
+
+@Entity
+@PrimaryKeyJoinColumn(name="titleId")
 class Serie(
     titleId: String,
-    ordering: Int,
     title: String,
-    region: String,
-    language: String,
     types: List<String>,
-    attributes: List<String>,
-    isOriginalTitle: Boolean,
     titleType: String,
-    primaryTitle: String,
-    originalTitle: String,
     isAdult: Boolean,
     startYear: Int,
     runtimeMinutes: Int,
@@ -22,9 +19,9 @@ class Serie(
     averageRating: Double,
     numVotes: Int,
     val endYear: Int?,
+    @OneToMany(cascade = [CascadeType.ALL] ,fetch = FetchType.EAGER)
     val seasons: List<Season>,
-) : CinematographicContent(titleId, ordering, title, region, language, types, attributes,
-    isOriginalTitle, titleType, primaryTitle, originalTitle, isAdult, startYear, runtimeMinutes,
+) :  CinematographicContent(titleId, title, titleType,isAdult, types, startYear, runtimeMinutes,
     genres, directors, writers, actors, averageRating, numVotes){
 
     override fun isSerie() = true
