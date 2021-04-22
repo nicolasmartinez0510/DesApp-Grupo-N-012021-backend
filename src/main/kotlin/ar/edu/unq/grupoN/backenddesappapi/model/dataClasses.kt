@@ -5,7 +5,11 @@ import ar.edu.unq.grupoN.backenddesappapi.model.review.Rating
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CastMember
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.Season
+import ar.edu.unq.grupoN.backenddesappapi.model.review.Valorations
 import java.time.LocalDateTime
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
 
 data class BasicInformation(val titleId: String, val title: String, val titleType: String,
                             val isAdultContent: Boolean, val startYear: Int, val runtimeMinutes: Int)
@@ -29,3 +33,17 @@ data class PublicReviewInfo(
 )
 
 data class SerieInfo(val endYear: Int?, val seasons: List<Season>)
+
+
+@Entity
+data class ValorationData(
+    var reviewId: Long?,
+    var nick: String,
+    var platform: String,
+    var email: String,
+    var valoration : Valorations,
+) {
+    @Id
+    @GeneratedValue
+    var id: Long? = null
+}

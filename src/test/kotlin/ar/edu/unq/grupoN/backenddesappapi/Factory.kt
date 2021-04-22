@@ -7,6 +7,13 @@ import java.time.LocalDateTime
 
 class Factory {
 
+    fun a_public_review(): Public{
+        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, IsAChapterReview.ISAMOVIE)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, language, geographicLocation)
+        val contentInfo = ContentInfo(gladiator_movie(), platform)
+        return Public(contentInfo, reviewInfo, publicReviewInfo)
+    }
+
     fun public_review_on(
         cinematographicContent: CinematographicContent, rating: Rating,
         isAChapterReview: IsAChapterReview, seasonNumber: Int? = null, episodeNumber: Int? = null

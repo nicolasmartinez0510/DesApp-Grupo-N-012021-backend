@@ -76,7 +76,35 @@ class ReviewTest {
         assertThat(review.reviewerId).isEqualTo(reviewerId)
     }
 
+    @Test
+    fun `a public new review recieve a like and now have a one like more`(){
+        val review = factory.a_public_review()
+        review.rate(nick = "Nico", platform = "Netflix" ,email = "nico.martinez@gmail.com",valoration= Valorations.LIKE)
 
+        assertThat(review.count_likes()).isEqualTo(1)
+
+    }
+
+    @Test
+    fun `a public new review receive a dislike and now have a one dislike more`() {
+        val review = factory.a_public_review()
+        review.rate(nick = "Nico", platform = "Netflix" ,email = "nico.martinez@gmail.com",valoration= Valorations.DISLIKE)
+
+        assertThat(review.count_dislikes()).isEqualTo(1)
+    }
+
+    @Test
+    fun `a public new review receive a like and two dislikes and now have less rating`() {
+        val review = factory.a_public_review()
+        review.rate(nick = "Nico", platform = "Netflix" ,email = "nico.martinez@gmail.com",valoration= Valorations.DISLIKE)
+        review.rate(nick = "Fede", platform = "Netflix" ,email = "fede.sandoval@gmail.com",valoration= Valorations.DISLIKE)
+        review.rate(nick = "Carlita", platform = "Netflix" ,email = "carlitaPerez@gmail.com",valoration= Valorations.LIKE)
+
+        val valorations = review.count_likes() - review.count_dislikes()
+
+
+        assertThat(review.valorations()).isEqualTo(valorations)
+    }
 
     private val resumeText = "Lorem Ipsum has been the industry's standard dummy"
     private val text = "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
