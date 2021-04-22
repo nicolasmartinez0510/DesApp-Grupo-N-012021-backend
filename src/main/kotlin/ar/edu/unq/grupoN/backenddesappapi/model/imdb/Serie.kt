@@ -3,6 +3,7 @@ package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
 import ar.edu.unq.grupoN.backenddesappapi.model.Cast
 import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
+import ar.edu.unq.grupoN.backenddesappapi.model.SerieInfo
 import javax.persistence.*
 
 @Entity
@@ -11,10 +12,18 @@ class Serie(
     basicInformation: BasicInformation,
     cast: Cast,
     rating: RatingInfo,
-    val endYear: Int?,
-    @OneToMany(cascade = [CascadeType.ALL] ,fetch = FetchType.EAGER)
-    val seasons: List<Season>,
+    serieInfo: SerieInfo
 ) :  CinematographicContent(basicInformation, cast, rating){
+
+    var endYear: Int? = null
+
+    @OneToMany(cascade = [CascadeType.ALL] ,fetch = FetchType.EAGER)
+    var seasons: List<Season>
+
+    init {
+        endYear = serieInfo.endYear
+        seasons = serieInfo.seasons
+    }
 
     override fun isSerie() = true
 }

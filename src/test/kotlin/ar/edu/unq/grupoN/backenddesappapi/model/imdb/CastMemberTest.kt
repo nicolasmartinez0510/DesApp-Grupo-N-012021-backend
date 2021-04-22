@@ -20,4 +20,11 @@ class CastMemberTest {
         assertThat(norman.character).isEqualTo("Norman")
     }
 
+    @Test
+    fun `a cast member set a new id`(){
+        norman.id = 5
+
+        assertThat(norman.id).isEqualTo(5)
+    }
+
 }

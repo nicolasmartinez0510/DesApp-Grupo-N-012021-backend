@@ -1,4 +1,4 @@
-package ar.edu.unq.grupoN.backenddesappapi.model.critics
+package ar.edu.unq.grupoN.backenddesappapi.model.review
 
 
 enum class Rating {
