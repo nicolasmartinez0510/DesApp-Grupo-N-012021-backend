@@ -23,7 +23,7 @@ class CinematographicContentTest {
     }
 
     @Test
-    fun `series have extra information`(){
+    fun `series have extra information about IMDb information`(){
         assertThat(spartacus.endYear).isEqualTo(2013)
         assertThat(spartacus.seasons).usingRecursiveComparison()
             .isEqualTo(listOf(Season(2, listOf(Episode(1)))))

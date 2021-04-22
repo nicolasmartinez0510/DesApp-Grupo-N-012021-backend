@@ -10,7 +10,6 @@ import javax.persistence.*
 @Inheritance(strategy= InheritanceType.JOINED)
 abstract class Review(
     @ManyToOne(fetch = FetchType.EAGER)
-    @LazyCollection(LazyCollectionOption.FALSE)
     open var cinematographicContent: CinematographicContent,
     open var resumeText: String,
     open var text: String,
@@ -20,26 +19,9 @@ abstract class Review(
     open var isAChapterReview: IsAChapterReview,
     open var seasonNumber: Int?,
     open var episodeNumber: Int?,
-    open var valorations:Int = 0
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id: Long? = null
-    //    fun rate(rate : varorations){
-//        if(rate.equals(valorations.LIKE)) {
-//            like()
-//        } else { dislike() }
-//    }
-//
-//    private fun like() {
-//        this.open varorations += 1
-//    }
-//
-//    private fun dislike(){
-//        if (this.valorations != 0) {
-//            this.open varorations -= 1
-//        }
-//    }
-//
 }
 

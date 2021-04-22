@@ -12,7 +12,7 @@ class CastMemberTest {
     fun `a cast member know IMDb information`(){
 
         assertThat(norman.name).isEqualTo("Maaya Uchida")
-        assertThat(norman.category).isEqualTo("Actor")
+        assertThat(norman.employment).isEqualTo("Actor")
         assertThat(norman.job).isEqualTo("Voice Actor")
         assertThat(norman.character).isEqualTo("Norman")
         assertThat(norman.birthYear).isEqualTo(9999)

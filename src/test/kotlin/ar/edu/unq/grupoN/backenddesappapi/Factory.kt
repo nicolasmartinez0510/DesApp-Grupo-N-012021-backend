@@ -1,5 +1,8 @@
 package ar.edu.unq.grupoN.backenddesappapi
 
+import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
+import ar.edu.unq.grupoN.backenddesappapi.model.Cast
+import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
 import ar.edu.unq.grupoN.backenddesappapi.model.critics.*
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.*
 import java.time.LocalDateTime
@@ -37,14 +40,21 @@ class Factory {
 
     fun spartacus_serie(): Serie {
         val seasons = Season(2, listOf(Episode(1)))
+        val basicInformation = BasicInformation("SPTKSukq4sk893", "Spartacus",
+            titleType,isAdult, 2010, runtimeMinutes)
+        val cast = Cast(directors, writers, actors)
+        val rating = RatingInfo(averageRating, numVotes)
 
-        return Serie("SPTKSukq4sk893", "Spartacus", types,titleType,isAdult, 2010, runtimeMinutes,
-                genres, directors, writers, actors, averageRating, numVotes, 2013, listOf(seasons))
+        return Serie(basicInformation, cast, rating, 2013, listOf(seasons))
     }
 
     fun gladiator_movie(): Movie {
-        return Movie(titleId, title, types, titleType, isAdult, startYear, runtimeMinutes,
-            genres, directors, writers, actors, averageRating, numVotes)
+        val basicInformation = BasicInformation("GLADIIiiatoor45", "Gladiator",
+            titleType,isAdult, startYear, runtimeMinutes)
+        val cast = Cast(directors, writers, actors)
+        val rating = RatingInfo(averageRating, numVotes)
+
+        return Movie(basicInformation, cast, rating)
     }
 
     fun genericCastMember() = CastMember("Russell Crowe", "Actor",
@@ -52,22 +62,11 @@ class Factory {
 
 
     //Objects variables
-
-    val titleId = "GLD320jskiQ"
-    val ordering = 3
-    val title = "Gladiator"
-    val region = "USA"
     val language = "English"
-    val types = listOf("alternative", "tv")
-    val attributes = listOf("violence", "roma", "history")
-    val isOriginalTitle = true
     val titleType = "movie"
-    val primaryTitle = "Gladiator"
-    val originalTitle = "Gladiator"
     val isAdult = true
     val startYear = 2000
     val runtimeMinutes = 155
-    val genres = listOf("action", "adventure", "drama")
     val directors = listOf(genericCastMember())
     val writers = listOf(genericCastMember(), genericCastMember(), genericCastMember())
     val averageRating = 4.9
@@ -79,7 +78,7 @@ class Factory {
     val includeSpoiler = true
     val date = LocalDateTime.of(2018,10,15,23,16)
     val platform = "Netflix"
-    val userId = "nockkO^4"
+    val userId = "chester44"
     val username = "chesterfield"
     val geographicLocation = "United States"
 }
