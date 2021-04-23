@@ -1,31 +1,29 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
+import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
+import ar.edu.unq.grupoN.backenddesappapi.model.Cast
+import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
+import ar.edu.unq.grupoN.backenddesappapi.model.SerieInfo
+import javax.persistence.*
+
+@Entity
+@PrimaryKeyJoinColumn(name="titleId")
 class Serie(
-    titleId: String,
-    ordering: Int,
-    title: String,
-    region: String,
-    language: String,
-    types: List<String>,
-    attributes: List<String>,
-    isOriginalTitle: Boolean,
-    titleType: String,
-    primaryTitle: String,
-    originalTitle: String,
-    isAdult: Boolean,
-    startYear: Int,
-    runtimeMinutes: Int,
-    genres: List<String>,
-    directors: List<CastMember>,
-    writers: List<CastMember>,
-    actors: List<CastMember>,
-    averageRating: Double,
-    numVotes: Int,
-    val endYear: Int?,
-    val seasons: List<Season>,
-) : CinematographicContent(titleId, ordering, title, region, language, types, attributes,
-    isOriginalTitle, titleType, primaryTitle, originalTitle, isAdult, startYear, runtimeMinutes,
-    genres, directors, writers, actors, averageRating, numVotes){
+    basicInformation: BasicInformation,
+    cast: Cast,
+    rating: RatingInfo,
+    serieInfo: SerieInfo
+) :  CinematographicContent(basicInformation, cast, rating){
+
+    var endYear: Int? = null
+
+    @OneToMany(cascade = [CascadeType.ALL] ,fetch = FetchType.EAGER)
+    var seasons: List<Season>
+
+    init {
+        endYear = serieInfo.endYear
+        seasons = serieInfo.seasons
+    }
 
     override fun isSerie() = true
 }

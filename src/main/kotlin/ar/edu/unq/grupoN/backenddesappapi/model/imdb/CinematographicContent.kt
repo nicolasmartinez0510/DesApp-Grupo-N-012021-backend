@@ -1,26 +1,54 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
-open class CinematographicContent(
-    val titleId: String,
-    val ordering: Int,
-    val title: String,
-    val region: String,
-    val language: String,
-    val types: List<String>,
-    val attributes: List<String>,
-    val isOriginalTitle: Boolean,
-    val titleType: String,
-    val primaryTitle: String,
-    val originalTitle: String,
-    val isAdult: Boolean,
-    val startYear: Int,
-    val runtimeMinutes: Int,
-    val genres: List<String>,
-    val directors: List<CastMember>,
-    val writers: List<CastMember>,
-    val actors: List<CastMember>,
-    val averageRating: Double,
-    val numVotes: Int
-){
+import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
+import ar.edu.unq.grupoN.backenddesappapi.model.Cast
+import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
+import javax.persistence.*
+
+@Entity
+@Inheritance(strategy= InheritanceType.JOINED)
+abstract class CinematographicContent(){
+    @Id
+    open var titleId: String = ""
+    open var title: String = ""
+    open var titleType: String = ""
+    open var isAdultContent: Boolean = false
+    open var startYear: Int? = null
+    open var runtimeMinutes: Int? = null
+    @ManyToMany()
+    open var directors: List<CastMember> = listOf()
+    @ManyToMany()
+    open var writers: List<CastMember> = listOf()
+    @ManyToMany()
+    open var actors: List<CastMember> = listOf()
+    open var averageRating: Double = 0.0
+    open var votesAmount: Int = 0
+
+    constructor(basicInformation: BasicInformation, cast: Cast, rating: RatingInfo): this(){
+        set_basic_information(basicInformation)
+        set_cast(cast)
+        set_rating(rating)
+    }
+
     open fun isSerie() = false
+
+    private fun set_basic_information(basicInformation: BasicInformation) {
+        this.titleId = basicInformation.titleId
+        this.title = basicInformation.title
+        this.titleType = basicInformation.titleType
+        this.isAdultContent = basicInformation.isAdultContent
+        this.startYear = basicInformation.startYear
+        this.runtimeMinutes = basicInformation.runtimeMinutes
+    }
+
+    private fun set_cast(cast: Cast) {
+        this.actors = cast.actors
+        this.writers = cast.writers
+        this.directors = cast.directors
+    }
+
+    private fun set_rating(rating: RatingInfo) {
+        this.averageRating = rating.averageRating
+        this.votesAmount = rating.votesAmount
+    }
 }
