@@ -9,6 +9,6 @@ enum class IsAChapterReview{
     YES, NO, ISAMOVIE
 }
 
-enum class Valorations(){
+enum class Valoration{
     LIKE,DISLIKE
 }

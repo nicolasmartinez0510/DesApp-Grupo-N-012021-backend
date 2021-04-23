@@ -10,7 +10,7 @@ import javax.persistence.*
 @Entity
 @Inheritance(strategy= InheritanceType.JOINED)
 abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     open lateinit var cinematographicContent: CinematographicContent
     open lateinit var platform: String
     open lateinit var isAChapterReview: IsAChapterReview
@@ -20,8 +20,8 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     open lateinit var text: String
     open lateinit var rating: Rating
     open lateinit var date: LocalDateTime
-    @OneToMany(cascade = [CascadeType.ALL])
-    private var valorations: MutableList<ValorationData> = mutableListOf()
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    open var valorations: MutableList<ValorationData> = mutableListOf()
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private var id: Long? = null
@@ -39,26 +39,32 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         this.isAChapterReview = reviewInfo.isAChapterReview
     }
 
-    fun rate(nick:String,platform:String,email:String,valoration:Valorations){
-        valorations.add(ValorationData(id,nick,platform,email,valoration))
+    fun rate(userId:String, platform:String, valoration:Valoration){
+        val existingValoration: ValorationData? = valorations.firstOrNull {
+                aValoration -> aValoration.isFromUser(userId, platform)
+        }
+        if (existingValoration == null) {
+            val newValoration = createValoration(userId, platform, valoration)
+            valorations.add(newValoration)
+        } else {
+            existingValoration.valoration = valoration
+        }
     }
 
-    fun count_likes():Int{
-        return counter(Valorations.LIKE)
+    fun amountOf(valoration: Valoration):Int{
+        return counter(valoration)
     }
 
-    fun count_dislikes():Int{
-        return counter(Valorations.DISLIKE)
+    fun valoration():Int{
+        return amountOf(Valoration.LIKE) - amountOf(Valoration.DISLIKE)
     }
 
-    fun valorations():Int{
-        return count_likes() - count_dislikes()
-    }
+    private fun createValoration(userId: String, platform: String, valoration: Valoration) =
+        ValorationData(this, userId, platform, valoration)
 
-    private fun counter(valoration_to_count:Valorations):Int{
+    private fun counter(valoration_to_count:Valoration):Int{
         return valorations.count { it.valoration == valoration_to_count }
     }
-
 }
 
 

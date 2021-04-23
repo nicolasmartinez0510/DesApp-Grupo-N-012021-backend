@@ -79,31 +79,50 @@ class ReviewTest {
     @Test
     fun `a public new review recieve a like and now have a one like more`(){
         val review = factory.a_public_review()
-        review.rate(nick = "Nico", platform = "Netflix" ,email = "nico.martinez@gmail.com",valoration= Valorations.LIKE)
+        review.rate(userId = "Nico", platform = "Netflix" ,valoration= Valoration.LIKE)
 
-        assertThat(review.count_likes()).isEqualTo(1)
+        assertThat(review.amountOf(Valoration.LIKE)).isEqualTo(1)
 
     }
 
     @Test
     fun `a public new review receive a dislike and now have a one dislike more`() {
         val review = factory.a_public_review()
-        review.rate(nick = "Nico", platform = "Netflix" ,email = "nico.martinez@gmail.com",valoration= Valorations.DISLIKE)
+        review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
 
-        assertThat(review.count_dislikes()).isEqualTo(1)
+        assertThat(review.amountOf(Valoration.DISLIKE)).isEqualTo(1)
     }
 
     @Test
-    fun `a public new review receive a like and two dislikes and now have less rating`() {
+    fun `a public new review receive two dislikes and now have less rating`() {
         val review = factory.a_public_review()
-        review.rate(nick = "Nico", platform = "Netflix" ,email = "nico.martinez@gmail.com",valoration= Valorations.DISLIKE)
-        review.rate(nick = "Fede", platform = "Netflix" ,email = "fede.sandoval@gmail.com",valoration= Valorations.DISLIKE)
-        review.rate(nick = "Carlita", platform = "Netflix" ,email = "carlitaPerez@gmail.com",valoration= Valorations.LIKE)
+        val valorationBeforeReceiveValorations = review.valoration()
+        review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
+        review.rate(userId = "Fede", platform = "Netflix",valoration= Valoration.DISLIKE)
 
-        val valorations = review.count_likes() - review.count_dislikes()
+        val valorationAfterReceiveValorations = valorationBeforeReceiveValorations - 2
+        assertThat(review.valoration()).isEqualTo(valorationAfterReceiveValorations)
+    }
 
+    @Test
+    fun `a user from a platform who like two times a review count by one`() {
+        val review = factory.a_public_review()
+        val valorationBeforeReceiveValorations = review.valoration()
+        review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
+        review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
 
-        assertThat(review.valorations()).isEqualTo(valorations)
+        val valorationAfterReceiveValorations = valorationBeforeReceiveValorations + 1
+        assertThat(review.valoration()).isEqualTo(valorationAfterReceiveValorations)
+    }
+
+    @Test
+    fun `when a user from a platform who like and after dislike a review, review only has a dislike`() {
+        val review = factory.a_public_review()
+        review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
+        review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
+
+        assertThat(review.amountOf(Valoration.DISLIKE)).isEqualTo(1)
+        assertThat(review.amountOf(Valoration.LIKE)).isEqualTo(0)
     }
 
     private val resumeText = "Lorem Ipsum has been the industry's standard dummy"

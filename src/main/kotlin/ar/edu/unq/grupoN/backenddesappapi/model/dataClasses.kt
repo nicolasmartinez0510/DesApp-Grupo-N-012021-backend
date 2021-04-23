@@ -5,14 +5,14 @@ import ar.edu.unq.grupoN.backenddesappapi.model.review.Rating
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CastMember
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.Season
-import ar.edu.unq.grupoN.backenddesappapi.model.review.Valorations
+import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
+import ar.edu.unq.grupoN.backenddesappapi.model.review.Valoration
 import java.time.LocalDateTime
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.Id
+import javax.persistence.*
 
-data class BasicInformation(val titleId: String, val title: String, val titleType: String,
-                            val isAdultContent: Boolean, val startYear: Int, val runtimeMinutes: Int)
+data class BasicInformation(
+    var titleId: String, val title: String, val titleType: String,
+    val isAdultContent: Boolean, val startYear: Int, val runtimeMinutes: Int)
 
 data class Cast(val writers: List<CastMember>, val directors: List<CastMember>, val actors: List<CastMember>)
 
@@ -36,14 +36,16 @@ data class SerieInfo(val endYear: Int?, val seasons: List<Season>)
 
 
 @Entity
-data class ValorationData(
-    var reviewId: Long?,
-    var nick: String,
+class ValorationData(
+    @ManyToOne(fetch = FetchType.EAGER)
+    var review: Review,
+    var userId: String,
     var platform: String,
-    var email: String,
-    var valoration : Valorations,
+    var valoration : Valoration,
 ) {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun isFromUser(userId: String, platform: String) = this.userId == userId && platform == platform
 }
