@@ -1,4 +1,4 @@
-package ar.edu.unq.grupoN.backenddesappapi.model.critics
+package ar.edu.unq.grupoN.backenddesappapi.model.review
 
 
 enum class Rating {
@@ -9,6 +9,6 @@ enum class IsAChapterReview{
     YES, NO, ISAMOVIE
 }
 
-enum class Valorations(){
+enum class Valoration{
     LIKE,DISLIKE
 }

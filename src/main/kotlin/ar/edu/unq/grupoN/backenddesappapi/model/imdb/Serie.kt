@@ -1,28 +1,29 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
+import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
+import ar.edu.unq.grupoN.backenddesappapi.model.Cast
+import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
+import ar.edu.unq.grupoN.backenddesappapi.model.SerieInfo
 import javax.persistence.*
 
 @Entity
 @PrimaryKeyJoinColumn(name="titleId")
 class Serie(
-    titleId: String,
-    title: String,
-    types: List<String>,
-    titleType: String,
-    isAdult: Boolean,
-    startYear: Int,
-    runtimeMinutes: Int,
-    genres: List<String>,
-    directors: List<CastMember>,
-    writers: List<CastMember>,
-    actors: List<CastMember>,
-    averageRating: Double,
-    numVotes: Int,
-    val endYear: Int?,
+    basicInformation: BasicInformation,
+    cast: Cast,
+    rating: RatingInfo,
+    serieInfo: SerieInfo
+) :  CinematographicContent(basicInformation, cast, rating){
+
+    var endYear: Int? = null
+
     @OneToMany(cascade = [CascadeType.ALL] ,fetch = FetchType.EAGER)
-    val seasons: List<Season>,
-) :  CinematographicContent(titleId, title, titleType,isAdult, types, startYear, runtimeMinutes,
-    genres, directors, writers, actors, averageRating, numVotes){
+    var seasons: List<Season>
+
+    init {
+        endYear = serieInfo.endYear
+        seasons = serieInfo.seasons
+    }
 
     override fun isSerie() = true
 }
