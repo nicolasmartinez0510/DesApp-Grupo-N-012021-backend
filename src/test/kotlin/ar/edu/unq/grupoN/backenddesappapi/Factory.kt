@@ -58,7 +58,6 @@ class Factory {
             "SPTKSukq4sk893", "Spartacus",
             titleType, isAdult, 2010, runtimeMinutes
         )
-        val cast = Cast(directors, writers, actors)
         val rating = RatingInfo(averageRating, numVotes)
         val serieInfo = SerieInfo(2013, listOf())
         val spartacus = Serie(basicInformation, cast, rating, serieInfo)
@@ -73,7 +72,6 @@ class Factory {
             "GLADIIiiatoor45", "Gladiator",
             titleType, isAdult, startYear, runtimeMinutes
         )
-        val cast = Cast(directors, writers, actors)
         val rating = RatingInfo(averageRating, numVotes)
 
         return Movie(basicInformation, cast, rating)
@@ -81,10 +79,9 @@ class Factory {
 
     fun genericCastMember(): CastMember {
         val russell = CastMember(
-            "Russell Crowe", "Actor",
+            "Russell Crowe", Employment.ACTOR,
             null, "Maximus", 9999, 9999
         )
-        russell.id = 78
         return russell
     }
 
@@ -94,11 +91,9 @@ class Factory {
     val isAdult = true
     val startYear = 2000
     val runtimeMinutes = 155
-    val directors = listOf(genericCastMember())
-    val writers = listOf(genericCastMember(), genericCastMember(), genericCastMember())
+    val cast = mutableListOf(genericCastMember())
     val averageRating = 4.9
     val numVotes = 1355421
-    val actors = listOf(genericCastMember())
 
     val resumeText = "Lorem Ipsum has been the industry's standard dummy"
     val text =

@@ -3,23 +3,12 @@ package ar.edu.unq.grupoN.backenddesappapi
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
 import org.springframework.boot.runApplication
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
 
 
 @SpringBootApplication(exclude = [SecurityAutoConfiguration::class])
 class BackendDesappApiApplication
 
-@RestController
-class HelloController{
-	@GetMapping("/")
-	fun sayHello(@RequestParam(value = "myName", defaultValue = "World") name: String?): String? {
-		return String.format("Hello %s!", name)
-	}
-}
 
 fun main(args: Array<String>) {
-	runApplication<BackendDesappApiApplication>(*args)
+    runApplication<BackendDesappApiApplication>(*args)
 }
-

@@ -14,8 +14,6 @@ data class BasicInformation(
     var titleId: String, val title: String, val titleType: String,
     val isAdultContent: Boolean, val startYear: Int, val runtimeMinutes: Int)
 
-data class Cast(val writers: List<CastMember>, val directors: List<CastMember>, val actors: List<CastMember>)
-
 data class RatingInfo(val averageRating: Double, val votesAmount: Int)
 
 data class ContentInfo(val cinematographicContent: CinematographicContent, val platform: String,
@@ -47,5 +45,5 @@ class ValorationData(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 
-    fun isFromUser(userId: String, platform: String) = this.userId == userId && platform == platform
+    fun isFromUser(userId: String, platform: String) = this.userId == userId && this.platform == platform
 }

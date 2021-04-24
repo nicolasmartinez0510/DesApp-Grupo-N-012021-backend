@@ -12,3 +12,7 @@ enum class IsAChapterReview{
 enum class Valoration{
     LIKE,DISLIKE
 }
+
+enum class Employment {
+    ACTOR, WRITER, DIRECTOR
+}

@@ -10,20 +10,20 @@ import javax.persistence.*
 @Entity
 @Inheritance(strategy= InheritanceType.JOINED)
 abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
-    @ManyToOne(fetch = FetchType.LAZY)
-    open lateinit var cinematographicContent: CinematographicContent
-    open lateinit var platform: String
-    open lateinit var isAChapterReview: IsAChapterReview
-    open var seasonNumber: Int? = null
-    open var episodeNumber: Int? = null
-    open lateinit var resumeText: String
-    open lateinit var text: String
-    open lateinit var rating: Rating
-    open lateinit var date: LocalDateTime
+    @ManyToOne(fetch = FetchType.EAGER)
+    var cinematographicContent: CinematographicContent
+    var platform: String
+    var isAChapterReview: IsAChapterReview
+    var seasonNumber: Int? = null
+    var episodeNumber: Int? = null
+    var resumeText: String
+    var text: String
+    var rating: Rating
+    var date: LocalDateTime
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
-    open var valorations: MutableList<ValorationData> = mutableListOf()
+    open var valorations: MutableSet<ValorationData> = mutableSetOf()
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private var id: Long? = null
 
     init {
