@@ -8,18 +8,18 @@ import java.time.LocalDateTime
 class Factory {
 
     fun a_public_review(): Public{
-        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, IsAChapterReview.ISAMOVIE)
-        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, language, geographicLocation)
+        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, ReviewType.MOVIE, language)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId,  geographicLocation)
         val contentInfo = ContentInfo(gladiator_movie(), platform)
         return Public(contentInfo, reviewInfo, publicReviewInfo)
     }
 
     fun public_review_on(
         cinematographicContent: CinematographicContent, rating: Rating,
-        isAChapterReview: IsAChapterReview, seasonNumber: Int? = null, episodeNumber: Int? = null
+        reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Public {
-        val reviewInfo = ReviewInfo(resumeText, text, rating, date, isAChapterReview)
-        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, language, geographicLocation)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, geographicLocation)
 
         return if (cinematographicContent.isSerie()) {
             val serie: Serie = cinematographicContent as Serie
@@ -34,9 +34,9 @@ class Factory {
 
     fun premium_review_on(
         cinematographicContent: CinematographicContent,
-        rating: Rating, isAChapterReview: IsAChapterReview, seasonNumber: Int? = null, episodeNumber: Int? = null
+        rating: Rating, reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Premium {
-        val reviewInfo = ReviewInfo(resumeText, text, rating, date, isAChapterReview)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
         val reviewerId = "ASDFfktuyPTi9r8rY"
         return if (cinematographicContent.isSerie()) {
             val serie: Serie = cinematographicContent as Serie

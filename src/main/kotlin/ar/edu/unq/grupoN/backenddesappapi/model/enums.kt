@@ -5,8 +5,8 @@ enum class Rating {
     ONE, TWO, THREE, FOUR, FIVE;
 }
 
-enum class IsAChapterReview{
-    YES, NO, ISAMOVIE
+enum class ReviewType{
+    CHAPTER, SERIE, MOVIE
 }
 
 enum class Valoration{
