@@ -47,25 +47,25 @@ abstract class ReviewDTO(review: Review) {
     }
 }
 
-class PublicDTO(public: Public) : ReviewDTO(public) {
+class PublicDTO(public_review: Public) : ReviewDTO(public_review) {
     var includeSpoiler: Boolean = false
     var userId: String
     var username: String
     var geographicLocation: String
 
     init {
-        this.includeSpoiler = public.includeSpoiler
-        this.userId = public.userId
-        this.username = public.username
-        this.geographicLocation = public.geographicLocation
+        this.includeSpoiler = public_review.includeSpoiler
+        this.userId = public_review.userId
+        this.username = public_review.username
+        this.geographicLocation = public_review.geographicLocation
     }
 }
 
-class PremiumDTO(premium: Premium) : ReviewDTO(premium) {
+class PremiumDTO(premium_review: Premium) : ReviewDTO(premium_review) {
     var reviewerId: String
 
     init {
-        this.reviewerId = premium.reviewerId
+        this.reviewerId = premium_review.reviewerId
     }
 }
 

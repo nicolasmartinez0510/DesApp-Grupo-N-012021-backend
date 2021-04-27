@@ -35,11 +35,11 @@ class FakeDataConfiguration {
 
     // private auxiliar functions for generate fake data.
     private fun createSeries(
-        cantidad: Int,
+        amount: Int,
         cinematographicContentService: CinematographicContentService,
         reviewService: ReviewService
     ) {
-        repeat(cantidad) {
+        repeat(amount) {
             val serieInfo =
                 SerieInfo(
                     endYear = faker.number().numberBetween(2000, 2021),
@@ -51,7 +51,7 @@ class FakeDataConfiguration {
                     basicInformation = getBasicInformation(),
                     cast = getCastMembers(5),
                     rating = getRatingInfo(),
-                    serieInfo
+                    serieInfo = serieInfo
                 )
 
             cinematographicContentService.add(serie)
@@ -87,10 +87,11 @@ class FakeDataConfiguration {
         }
     }
 
+
     private fun getBasicInformation(): BasicInformation {
         val title = faker.book().title()
         return BasicInformation(
-            titleId = title + "-" + faker.number().numberBetween(0, 80000) + "-" + "ID",
+            titleId = (title + "-" + faker.code().isbn10() + "-" + "id").replace("\\s".toRegex(), ""),
             title = title,
             titleType = "Adventure",
             isAdultContent = faker.bool().bool(),
@@ -158,23 +159,23 @@ class FakeDataConfiguration {
                 platform = faker.options().option(Platform::class.java).toString()
             )
 
-           val public = Public(contentInfo, reviewInfo, publicReviewInfo)
+           val public_review = Public(contentInfo, reviewInfo, publicReviewInfo)
 
             repeat(faker.number().numberBetween(1,3)){
-                public.rate(faker.name().username(),
+                public_review.rate(faker.name().username(),
                     faker.options().option(Platform::class.java).toString(),
                     faker.options().option(Valoration::class.java))
             }
 
-            val premium = Premium(contentInfo,reviewInfo, faker.rickAndMorty().character() +"Id")
+            val premium_review = Premium(contentInfo,reviewInfo, faker.rickAndMorty().character() +"Id")
             repeat(faker.number().numberBetween(3,4)){
-                premium.rate(faker.name().username(),
+                premium_review.rate(faker.name().username(),
                     faker.options().option(Platform::class.java).toString(),
                     faker.options().option(Valoration::class.java))
             }
 
-            reviewService.add(public)
-            reviewService.add(premium)
+            reviewService.add(public_review)
+            reviewService.add(premium_review)
         }
     }
 
