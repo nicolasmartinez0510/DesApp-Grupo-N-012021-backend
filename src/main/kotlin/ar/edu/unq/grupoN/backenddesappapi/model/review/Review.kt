@@ -13,13 +13,14 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     @ManyToOne(fetch = FetchType.EAGER)
     var cinematographicContent: CinematographicContent
     var platform: String
-    var isAChapterReview: IsAChapterReview
+    var reviewType: ReviewType
     var seasonNumber: Int? = null
     var episodeNumber: Int? = null
     var resumeText: String
     var text: String
     var rating: Rating
     var date: LocalDateTime
+    var language : String
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     open var valorations: MutableSet<ValorationData> = mutableSetOf()
     @Id
@@ -36,7 +37,8 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         this.text = reviewInfo.text
         this.rating = reviewInfo.rating
         this.date = reviewInfo.date
-        this.isAChapterReview = reviewInfo.isAChapterReview
+        this.language = reviewInfo.language
+        this.reviewType = reviewInfo.reviewType
     }
 
     fun rate(userId:String, platform:String, valoration:Valoration){
@@ -58,6 +60,8 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     fun valoration():Int{
         return amountOf(Valoration.LIKE) - amountOf(Valoration.DISLIKE)
     }
+
+    open fun isPublic() = false
 
     private fun createValoration(userId: String, platform: String, valoration: Valoration) =
         ValorationData(this, userId, platform, valoration)
