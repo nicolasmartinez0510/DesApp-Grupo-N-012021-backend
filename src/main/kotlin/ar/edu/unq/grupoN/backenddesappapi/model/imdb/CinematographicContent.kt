@@ -1,7 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
-import ar.edu.unq.grupoN.backenddesappapi.model.Cast
 import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
 import javax.persistence.*
 
@@ -15,19 +14,17 @@ abstract class CinematographicContent(){
     open var isAdultContent: Boolean = false
     open var startYear: Int? = null
     open var runtimeMinutes: Int? = null
-    @ManyToMany()
-    open var directors: List<CastMember> = listOf()
-    @ManyToMany()
-    open var writers: List<CastMember> = listOf()
-    @ManyToMany()
-    open var actors: List<CastMember> = listOf()
+    @OneToMany(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "party_id")
+    var cast: MutableList<CastMember> = mutableListOf()
     open var averageRating: Double = 0.0
     open var votesAmount: Int = 0
 
-    constructor(basicInformation: BasicInformation, cast: Cast, rating: RatingInfo): this(){
+    constructor(basicInformation: BasicInformation, cast: MutableList<CastMember>, rating: RatingInfo): this(){
+        this.cast = cast
         set_basic_information(basicInformation)
-        set_cast(cast)
         set_rating(rating)
+
     }
 
     open fun isSerie() = false
@@ -39,12 +36,6 @@ abstract class CinematographicContent(){
         this.isAdultContent = basicInformation.isAdultContent
         this.startYear = basicInformation.startYear
         this.runtimeMinutes = basicInformation.runtimeMinutes
-    }
-
-    private fun set_cast(cast: Cast) {
-        this.actors = cast.actors
-        this.writers = cast.writers
-        this.directors = cast.directors
     }
 
     private fun set_rating(rating: RatingInfo) {

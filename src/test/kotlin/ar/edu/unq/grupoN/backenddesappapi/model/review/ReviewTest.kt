@@ -11,7 +11,7 @@ class ReviewTest {
 
     @Test
     fun `a new public review on a serie episode`(){
-        val review = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, IsAChapterReview.YES,2,6)
+        val review = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.spartacus_serie())
@@ -20,11 +20,11 @@ class ReviewTest {
         assertThat(review.resumeText).isEqualTo(resumeText)
         assertThat(review.text).isEqualTo(text)
         assertThat(review.rating).isEqualTo(Rating.FOUR)
-        assertThat(review.includeSpoiler).isTrue()
+        assertThat(review.includeSpoiler).isTrue
         assertThat(review.date).isEqualTo(date)
         assertThat(review.platform).isEqualTo(platform)
         assertThat(review.userId).isEqualTo(userId)
-        assertThat(review.isAChapterReview).isEqualTo(IsAChapterReview.YES)
+        assertThat(review.reviewType).isEqualTo(ReviewType.CHAPTER)
         assertThat(review.language).isEqualTo(languague)
         assertThat(review.username).isEqualTo(username)
         assertThat(review.geographicLocation).isEqualTo(geographicLocation)
@@ -32,8 +32,8 @@ class ReviewTest {
 
     @Test
     fun `a public review set public review info`(){
-        val oldReview = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, IsAChapterReview.YES,2,6)
-        val review = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, IsAChapterReview.YES,2,6)
+        val oldReview = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+        val review = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
 
         review.geographicLocation = "Guadalajara"
         review.language = "Spanish"
@@ -49,30 +49,32 @@ class ReviewTest {
     }
     @Test
     fun `a new public review on a movie`(){
-        val review = factory.public_review_on(factory.gladiator_movie(), Rating.THREE, IsAChapterReview.ISAMOVIE)
+        val review = factory.public_review_on(factory.gladiator_movie(), Rating.THREE, ReviewType.MOVIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.gladiator_movie())
-        assertThat(review.isAChapterReview).isEqualTo(IsAChapterReview.ISAMOVIE)
+        assertThat(review.reviewType).isEqualTo(ReviewType.MOVIE)
+        assertThat(review.isPublic()).isTrue
     }
 
     @Test
-    fun `a new premium review on a serie`(){
-        val review = factory.premium_review_on(factory.spartacus_serie(), Rating.ONE, IsAChapterReview.NO)
+    fun `a new premium review on a serie know his data and who is not a public review`(){
+        val review = factory.premium_review_on(factory.spartacus_serie(), Rating.ONE, ReviewType.SERIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.spartacus_serie())
-        assertThat(review.isAChapterReview).isEqualTo(IsAChapterReview.NO)
+        assertThat(review.reviewType).isEqualTo(ReviewType.SERIE)
         assertThat(review.reviewerId).isEqualTo(reviewerId)
+        assertThat(review.isPublic()).isFalse
     }
 
     @Test
     fun `a new premium review on a movie`(){
-        val review = factory.premium_review_on(factory.gladiator_movie(), Rating.FIVE, IsAChapterReview.ISAMOVIE)
+        val review = factory.premium_review_on(factory.gladiator_movie(), Rating.FIVE, ReviewType.MOVIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.gladiator_movie())
-        assertThat(review.isAChapterReview).isEqualTo(IsAChapterReview.ISAMOVIE)
+        assertThat(review.reviewType).isEqualTo(ReviewType.MOVIE)
         assertThat(review.reviewerId).isEqualTo(reviewerId)
     }
 

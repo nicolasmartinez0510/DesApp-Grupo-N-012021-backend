@@ -1,11 +1,13 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
+import ar.edu.unq.grupoN.backenddesappapi.model.review.Employment
 import javax.persistence.*
 
 @Entity
-data class CastMember(val name: String, val employment: String, val job: String?, val character: String,
-                      val birthYear: Int, val deathYear: Int?) {
+data class CastMember(val name: String, val employment: Employment, val job: String?, val character: String,
+                      val birthYear: Int, val deathYear: Int?){
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long? = null
 }
