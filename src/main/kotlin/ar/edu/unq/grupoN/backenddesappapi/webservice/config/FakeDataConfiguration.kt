@@ -25,7 +25,7 @@ class FakeDataConfiguration {
     ) =
         CommandLineRunner {
             val cinematographicContentService = CinematographicContentService(cinematographicContentRepository)
-            val reviewService = ReviewService(reviewRepository)
+            val reviewService = ReviewService(reviewRepository, cinematographicContentRepository)
             val amountOfEachContent = faker.number().numberBetween(4,6)
 
             createMovies(amountOfEachContent, cinematographicContentService, reviewService)

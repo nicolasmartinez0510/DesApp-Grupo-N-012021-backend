@@ -1,23 +1,36 @@
 package ar.edu.unq.grupoN.backenddesappapi.service.dto
 
+import ar.edu.unq.grupoN.backenddesappapi.model.ContentInfo
+import ar.edu.unq.grupoN.backenddesappapi.model.PublicReviewInfo
+import ar.edu.unq.grupoN.backenddesappapi.model.ReviewInfo
 import ar.edu.unq.grupoN.backenddesappapi.model.ValorationData
 import ar.edu.unq.grupoN.backenddesappapi.model.review.*
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.time.LocalDateTime
 
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = PublicDTO::class, name = "PUBLIC"),
+    JsonSubTypes.Type(value = PremiumDTO::class, name = "PREMIUM")
+)
 abstract class ReviewDTO {
 
     companion object {
         fun fromModel(review: Review): ReviewDTO {
             return if (review.isPublic()) {
                 val newReview = review as Public
-                PublicDTO(review.cinematographicContent.titleId,
+                PublicDTO(review.cinematographicContent!!.titleId,
                 review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
                     review.seasonNumber, review.episodeNumber, review.reviewType,
                     review.valorations.map { ValorationDTO(it) }, newReview.includeSpoiler, newReview.userId,
                     newReview.username, newReview.geographicLocation)
             } else {
                 val newReview = review as Premium
-                PremiumDTO(review.cinematographicContent.titleId,
+                PremiumDTO(review.cinematographicContent!!.titleId,
                     review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
                     review.seasonNumber, review.episodeNumber, review.reviewType,
                     review.valorations.map { ValorationDTO(it) }, newReview.reviewerId)
@@ -25,10 +38,10 @@ abstract class ReviewDTO {
         }
     }
 
-    open fun isPublic() = false
+    abstract fun toModel(): Review
 }
 
-class PublicDTO(val cinematographicContentTitleId: String,
+class PublicDTO(val cinematographicContentTitleId: String?,
                 val platform: String,
                 val language: String,
                 val resumeText: String,
@@ -44,10 +57,16 @@ class PublicDTO(val cinematographicContentTitleId: String,
                 val username: String,
                 val geographicLocation: String) : ReviewDTO() {
 
-    override fun isPublic() = true
+    override fun toModel(): Review {
+        val contentInfo = ContentInfo(null, platform, seasonNumber, episodeNumber)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, geographicLocation)
+
+        return Public(contentInfo, reviewInfo, publicReviewInfo)
+    }
 }
 
-class PremiumDTO(val cinematographicContentTitleId: String,
+class PremiumDTO(val cinematographicContentTitleId: String?,
                  val platform: String,
                  val language: String,
                  val resumeText: String,
@@ -58,7 +77,15 @@ class PremiumDTO(val cinematographicContentTitleId: String,
                  val episodeNumber: Int? = null,
                  val reviewType: ReviewType,
                  val valorations: List<ValorationDTO> = mutableListOf(),
-                 val reviewerId: String) : ReviewDTO()
+                 val reviewerId: String) : ReviewDTO() {
+
+    override fun toModel(): Review {
+        val contentInfo = ContentInfo(null, platform, seasonNumber, episodeNumber)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
+
+        return Premium(contentInfo, reviewInfo, reviewerId)
+    }
+}
 
 
 class ValorationDTO(valorationData: ValorationData) {

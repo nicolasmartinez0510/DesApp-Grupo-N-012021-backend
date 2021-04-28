@@ -11,26 +11,16 @@ import org.springframework.web.servlet.view.RedirectView
 
 @RestController
 @CrossOrigin(origins = ["*"])
-class BasicController {
+class BasicController(val repository: CinematographicContentRepository) {
 
     @GetMapping("/")
     fun reviews(): RedirectView {
-        return RedirectView("/api/content")
+        return RedirectView("/api/review")
     }
 
-}
-
-
-@ServiceREST
-class Entry(val repository: CinematographicContentRepository, val reviewRepository: ReviewRepository) {
-
-    @GetMapping("/content")
+    @GetMapping("/api/content")
     fun content(): List<CinematographicContentDTO> {
         return repository.findAll().map { content -> CinematographicContentDTO.fromModel(content) }
     }
 
-    @GetMapping("/review")
-    fun review(): List<ReviewDTO> {
-        return reviewRepository.findAll().map { review -> ReviewDTO.fromModel(review) }
-    }
 }

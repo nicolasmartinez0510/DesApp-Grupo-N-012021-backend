@@ -15,7 +15,7 @@ data class BasicInformation(
 
 data class RatingInfo(val averageRating: Double, val votesAmount: Int)
 
-data class ContentInfo(val cinematographicContent: CinematographicContent, val platform: String,
+data class ContentInfo(val cinematographicContent: CinematographicContent?, val platform: String,
                        val seasonNumber: Int? = null, val episodeNumber: Int? = null)
 
 data class ReviewInfo(val resumeText: String, val text: String, val rating: Rating, val date: LocalDateTime,

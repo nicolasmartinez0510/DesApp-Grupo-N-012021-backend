@@ -11,7 +11,7 @@ import javax.persistence.*
 @Inheritance(strategy= InheritanceType.JOINED)
 abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     @ManyToOne(fetch = FetchType.EAGER)
-    open var cinematographicContent: CinematographicContent = contentInfo.cinematographicContent
+    open var cinematographicContent: CinematographicContent? = contentInfo.cinematographicContent
     open var platform: String = contentInfo.platform
     open lateinit var reviewType: ReviewType
     open var seasonNumber: Int? = null
