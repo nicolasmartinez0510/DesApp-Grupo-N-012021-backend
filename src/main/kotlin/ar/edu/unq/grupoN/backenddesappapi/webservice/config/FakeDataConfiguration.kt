@@ -3,29 +3,32 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.config
 import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.*
 import ar.edu.unq.grupoN.backenddesappapi.model.review.*
-import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.CinematographicContentService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import com.github.javafaker.Faker
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Repository
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 @Configuration
+@Repository
 class FakeDataConfiguration {
     val faker = Faker()
 
+    @Autowired
+    private lateinit var cinematographicContentService : CinematographicContentService
+
+    @Autowired
+    private lateinit var reviewService: ReviewService
+
+
     @Bean
-    fun fakeMoviesAndSeriesInject(
-        cinematographicContentRepository: CinematographicContentRepository,
-        reviewRepository: ReviewRepository
-    ) =
+    fun fakeMoviesAndSeriesInject() =
         CommandLineRunner {
-            val cinematographicContentService = CinematographicContentService(cinematographicContentRepository)
-            val reviewService = ReviewService(reviewRepository, cinematographicContentRepository)
             val amountOfEachContent = faker.number().numberBetween(4,6)
 
             createMovies(amountOfEachContent, cinematographicContentService, reviewService)

@@ -4,10 +4,19 @@ package ar.edu.unq.grupoN.backenddesappapi.service
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
-class ReviewService(val repository: ReviewRepository, val contentRepository: CinematographicContentRepository) {
+@Service
+class ReviewService{
+
+    @Autowired
+    private lateinit var repository: ReviewRepository
+
+    @Autowired
+    private lateinit var contentRepository: CinematographicContentRepository
 
     @Transactional
     fun saveReview(titleId: String, review: Review): Review {
