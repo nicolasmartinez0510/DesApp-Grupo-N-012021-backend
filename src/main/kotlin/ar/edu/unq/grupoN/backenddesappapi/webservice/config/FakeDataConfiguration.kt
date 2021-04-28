@@ -173,8 +173,8 @@ class FakeDataConfiguration {
                     faker.options().option(Valoration::class.java))
             }
 
-            reviewService.add(public)
-            reviewService.add(premium)
+            reviewService.addFakeReview(public)
+            reviewService.addFakeReview(premium)
         }
     }
 

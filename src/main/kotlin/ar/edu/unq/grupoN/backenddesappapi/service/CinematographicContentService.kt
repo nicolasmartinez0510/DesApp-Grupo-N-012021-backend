@@ -3,11 +3,19 @@ package ar.edu.unq.grupoN.backenddesappapi.service
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
-class CinematographicContentService constructor(private val repository: CinematographicContentRepository )
-    {
+class CinematographicContentService(val repository: CinematographicContentRepository ) {
+
+    @Transactional
+    fun findById(titleId: String): Optional<CinematographicContent> {
+        return repository.findById(titleId)
+    }
+
     @Transactional
     fun add(cinematographicContent: CinematographicContent): CinematographicContent {
         return repository.save(cinematographicContent)
     }
+
+
 }

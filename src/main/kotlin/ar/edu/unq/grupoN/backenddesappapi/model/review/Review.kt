@@ -11,16 +11,16 @@ import javax.persistence.*
 @Inheritance(strategy= InheritanceType.JOINED)
 abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     @ManyToOne(fetch = FetchType.EAGER)
-    var cinematographicContent: CinematographicContent
-    var platform: String
-    var reviewType: ReviewType
-    var seasonNumber: Int? = null
-    var episodeNumber: Int? = null
-    var resumeText: String
-    var text: String
-    var rating: Rating
-    var date: LocalDateTime
-    var language : String
+    open var cinematographicContent: CinematographicContent = contentInfo.cinematographicContent
+    open var platform: String = contentInfo.platform
+    open lateinit var reviewType: ReviewType
+    open var seasonNumber: Int? = null
+    open var episodeNumber: Int? = null
+    open lateinit var resumeText: String
+    open lateinit var text: String
+    open lateinit var rating: Rating
+    open lateinit var date: LocalDateTime
+    open lateinit var language : String
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     open var valorations: MutableSet<ValorationData> = mutableSetOf()
     @Id
@@ -28,8 +28,6 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     private var id: Long? = null
 
     init {
-        this.cinematographicContent = contentInfo.cinematographicContent
-        this.platform = contentInfo.platform
         this.seasonNumber = contentInfo.seasonNumber
         this.episodeNumber = contentInfo.episodeNumber
 

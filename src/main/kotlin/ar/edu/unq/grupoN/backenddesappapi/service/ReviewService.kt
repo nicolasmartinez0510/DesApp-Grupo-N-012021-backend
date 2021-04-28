@@ -4,10 +4,16 @@ import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import org.springframework.transaction.annotation.Transactional
 
-class ReviewService constructor(private val repository: ReviewRepository)
-{
+
+class ReviewService(val repository: ReviewRepository) {
+
     @Transactional
-    fun add(review: Review): Review {
+    fun saveReview(review: Review): Review {
+        return repository.save(review)
+    }
+
+    @Transactional
+    fun addFakeReview(review: Review): Review {
         return repository.save(review)
     }
 }

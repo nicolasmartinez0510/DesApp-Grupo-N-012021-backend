@@ -16,7 +16,7 @@ abstract class CinematographicContent(){
     open var runtimeMinutes: Int? = null
     @OneToMany(cascade = [CascadeType.ALL])
     @JoinColumn(name = "party_id")
-    var cast: MutableList<CastMember> = mutableListOf()
+    open var cast: MutableList<CastMember> = mutableListOf()
     open var averageRating: Double = 0.0
     open var votesAmount: Int = 0
 

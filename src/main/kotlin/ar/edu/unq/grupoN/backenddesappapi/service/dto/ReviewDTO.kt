@@ -4,70 +4,61 @@ import ar.edu.unq.grupoN.backenddesappapi.model.ValorationData
 import ar.edu.unq.grupoN.backenddesappapi.model.review.*
 import java.time.LocalDateTime
 
-abstract class ReviewDTO(review: Review) {
-    var cinematographicContentTitleId: String
-    var platform: String
-    var language: String
-    var resumeText: String
-    var text: String
-    var rating: Rating
-    var date: LocalDateTime
-    var seasonNumber: Int? = null
-    var episodeNumber: Int? = null
-    var valorations: List<ValorationDTO>
+abstract class ReviewDTO {
 
     companion object {
         fun fromModel(review: Review): ReviewDTO {
             return if (review.isPublic()) {
-                PublicDTO(review as Public)
+                val newReview = review as Public
+                PublicDTO(review.cinematographicContent.titleId,
+                review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
+                    review.seasonNumber, review.episodeNumber, review.reviewType,
+                    review.valorations.map { ValorationDTO(it) }, newReview.includeSpoiler, newReview.userId,
+                    newReview.username, newReview.geographicLocation)
             } else {
-                PremiumDTO(review as Premium)
+                val newReview = review as Premium
+                PremiumDTO(review.cinematographicContent.titleId,
+                    review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
+                    review.seasonNumber, review.episodeNumber, review.reviewType,
+                    review.valorations.map { ValorationDTO(it) }, newReview.reviewerId)
             }
         }
     }
 
-    init {
-        this.cinematographicContentTitleId = review.cinematographicContent.titleId
-        this.platform = review.platform
-        this.language = review.language
-        this.resumeText = review.resumeText
-        this.text = review.text
-        this.rating = review.rating
-        this.date = review.date
-        this.valorations = review.valorations.map { ValorationDTO(it) }
-
-        checkIfChapterReview(review)
-    }
-
-    fun checkIfChapterReview(review: Review) {
-        if (review.reviewType == ReviewType.CHAPTER) {
-            this.seasonNumber = review.seasonNumber
-            this.episodeNumber = review.episodeNumber
-        }
-    }
+    open fun isPublic() = false
 }
 
-class PublicDTO(public: Public) : ReviewDTO(public) {
-    var includeSpoiler: Boolean = false
-    var userId: String
-    var username: String
-    var geographicLocation: String
+class PublicDTO(val cinematographicContentTitleId: String,
+                val platform: String,
+                val language: String,
+                val resumeText: String,
+                val text: String,
+                val rating: Rating,
+                val date: LocalDateTime,
+                val seasonNumber: Int? = null,
+                val episodeNumber: Int? = null,
+                val reviewType: ReviewType,
+                val valorations: List<ValorationDTO> = mutableListOf(),
+                val includeSpoiler: Boolean = false,
+                val userId: String,
+                val username: String,
+                val geographicLocation: String) : ReviewDTO() {
 
-    init {
-        this.includeSpoiler = public.includeSpoiler
-        this.userId = public.userId
-        this.username = public.username
-        this.geographicLocation = public.geographicLocation
-    }
+    override fun isPublic() = true
 }
 
-class PremiumDTO(premium: Premium) : ReviewDTO(premium) {
-    var reviewerId: String
-
-    init {
-        this.reviewerId = premium.reviewerId
-    }
-}
+class PremiumDTO(val cinematographicContentTitleId: String,
+                 val platform: String,
+                 val language: String,
+                 val resumeText: String,
+                 val text: String,
+                 val rating: Rating,
+                 val date: LocalDateTime,
+                 val seasonNumber: Int? = null,
+                 val episodeNumber: Int? = null,
+                 val reviewType: ReviewType,
+                 val valorations: List<ValorationDTO> = mutableListOf(),
+                 val reviewerId: String) : ReviewDTO()
 
 
 class ValorationDTO(valorationData: ValorationData) {
