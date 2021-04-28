@@ -32,6 +32,13 @@ class ReviewController(reviewRepository : ReviewRepository, contentRepository: C
 
     }
 
+    @GetMapping("/search")
+    fun getReviewsFrom(@RequestParam contentId:String):List<ReviewDTO>{
+        return reviewService.getReviewsWithContentId(contentId).map {
+            ReviewDTO.fromModel(it)
+        }
+    }
+
     @GetMapping
     fun reviews(): List<ReviewDTO> {
         return reviewService.findAll().map { review -> ReviewDTO.fromModel(review) }
