@@ -1,9 +1,7 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.CinematographicContentDTO
-import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController

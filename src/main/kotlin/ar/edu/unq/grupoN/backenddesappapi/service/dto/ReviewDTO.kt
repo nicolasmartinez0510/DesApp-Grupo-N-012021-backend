@@ -22,18 +22,18 @@ abstract class ReviewDTO {
     companion object {
         fun fromModel(review: Review): ReviewDTO {
             return if (review.isPublic()) {
-                val newReview = review as Public
+                val publicReview = review as Public
                 PublicDTO(review.cinematographicContent!!.titleId,
                 review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
                     review.seasonNumber, review.episodeNumber, review.reviewType,
-                    review.valorations.map { ValorationDTO(it) }, newReview.includeSpoiler, newReview.userId,
-                    newReview.username, newReview.geographicLocation)
+                    review.valorations.map { ValorationDTO(it) }, publicReview.includeSpoiler, publicReview.userId,
+                    publicReview.username, publicReview.geographicLocation)
             } else {
-                val newReview = review as Premium
+                val premiumReview = review as Premium
                 PremiumDTO(review.cinematographicContent!!.titleId,
                     review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
                     review.seasonNumber, review.episodeNumber, review.reviewType,
-                    review.valorations.map { ValorationDTO(it) }, newReview.reviewerId)
+                    review.valorations.map { ValorationDTO(it) }, premiumReview.reviewerId)
             }
         }
     }
