@@ -24,3 +24,4 @@ deploy:
     on:
       all_branches: true
       condition: $TRAVIS_BRANCH =~ ^(main|development)$
+      

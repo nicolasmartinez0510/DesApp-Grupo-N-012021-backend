@@ -9,7 +9,6 @@ import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.PublicDTO
 import org.springframework.transaction.annotation.Transactional
 
-
 class ReviewService(val repository: ReviewRepository, val contentRepository: CinematographicContentRepository) {
 
     @Transactional
@@ -23,6 +22,7 @@ class ReviewService(val repository: ReviewRepository, val contentRepository: Cin
 
     @Transactional
     fun addFakeReview(review: Review): Review {
+
         return repository.save(review)
     }
 

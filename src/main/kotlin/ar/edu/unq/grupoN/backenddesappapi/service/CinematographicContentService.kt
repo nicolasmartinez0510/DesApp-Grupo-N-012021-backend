@@ -13,7 +13,7 @@ class CinematographicContentService(val repository: CinematographicContentReposi
     }
 
     @Transactional
-    fun add(cinematographicContent: CinematographicContent): CinematographicContent {
+    open fun add(cinematographicContent: CinematographicContent): CinematographicContent {
         return repository.save(cinematographicContent)
     }
 
