@@ -22,6 +22,16 @@ class ReviewController(reviewRepository : ReviewRepository, contentRepository: C
         return ReviewDTO.fromModel(myReview)
     }
 
+    @PutMapping("/rate/{reviewId}")
+    fun rate(@PathVariable reviewId: Long, @RequestBody valorationDTO: ValorationDTO): ReviewDTO{
+        val review = reviewService.findById(reviewId).get()
+        review.rate(valorationDTO.userId,valorationDTO.platform,valorationDTO.valoration)
+        reviewService.update(review = review)
+
+        return ReviewDTO.fromModel(review)
+
+    }
+
     @GetMapping
     fun reviews(): List<ReviewDTO> {
         return reviewService.findAll().map { review -> ReviewDTO.fromModel(review) }
@@ -29,3 +39,4 @@ class ReviewController(reviewRepository : ReviewRepository, contentRepository: C
 }
 
 data class CreateReviewRequest(val titleId: String, val reviewToCreate: ReviewDTO)
+data class ValorarReview(val reviewId: Long, val valorationDTO: ValorationDTO)

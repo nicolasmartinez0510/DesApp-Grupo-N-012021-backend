@@ -19,6 +19,17 @@ class ReviewService(val repository: ReviewRepository, val contentRepository: Cin
     }
 
     @Transactional
+    fun update(review: Review){
+        repository.save(review)
+    }
+
+
+    @Transactional
+    fun findById(id: Long): Optional<Review> {
+        return repository.findById(id)
+    }
+
+    @Transactional
     fun addFakeReview(review: Review): Review {
 
         return repository.save(review)

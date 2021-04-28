@@ -25,7 +25,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     open var valorations: MutableSet<ValorationData> = mutableSetOf()
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private var id: Long? = null
+    var id: Long? = null
 
     init {
         this.seasonNumber = contentInfo.seasonNumber
