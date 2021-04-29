@@ -2,10 +2,7 @@ package ar.edu.unq.grupoN.backenddesappapi.model
 
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.Season
-import ar.edu.unq.grupoN.backenddesappapi.model.review.ReviewType
-import ar.edu.unq.grupoN.backenddesappapi.model.review.Rating
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
-import ar.edu.unq.grupoN.backenddesappapi.model.review.Valoration
 import java.time.LocalDateTime
 import javax.persistence.*
 

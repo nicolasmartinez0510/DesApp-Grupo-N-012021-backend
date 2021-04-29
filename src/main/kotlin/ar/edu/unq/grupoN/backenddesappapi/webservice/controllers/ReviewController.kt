@@ -1,18 +1,23 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
-import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.CinematographicContentService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.web.bind.annotation.*
 
 @ServiceREST
 @RequestMapping("/api/review")
-class ReviewController(reviewRepository : ReviewRepository, contentRepository: CinematographicContentRepository) {
-    private var reviewService: ReviewService = ReviewService(reviewRepository, contentRepository)
-    private var contentService: CinematographicContentService = CinematographicContentService(contentRepository)
+@EnableAutoConfiguration
+class ReviewController {
+
+    @Autowired
+    private lateinit var reviewService: ReviewService
+
+    @Autowired
+    private lateinit var contentService: CinematographicContentService
 
     @PostMapping("/add")
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ReviewDTO {
@@ -22,7 +27,7 @@ class ReviewController(reviewRepository : ReviewRepository, contentRepository: C
         return ReviewDTO.fromModel(myReview)
     }
 
-    @PutMapping("/rate/{reviewId}")
+    @PostMapping("/rate/{reviewId}")
     fun rate(@PathVariable reviewId: Long, @RequestBody valorationDTO: ValorationDTO): ReviewDTO{
         val review = reviewService.findById(reviewId).get()
         review.rate(valorationDTO.userId,valorationDTO.platform,valorationDTO.valoration)
@@ -33,8 +38,8 @@ class ReviewController(reviewRepository : ReviewRepository, contentRepository: C
     }
 
     @GetMapping("/search")
-    fun getReviewsFrom(@RequestParam contentId:String):List<ReviewDTO>{
-        return reviewService.getReviewsWithContentId(contentId).map {
+    fun getReviewsFrom(@RequestParam titleId:String):List<ReviewDTO>{
+        return reviewService.findReviewsBy(titleId).map {
             ReviewDTO.fromModel(it)
         }
     }
@@ -46,4 +51,3 @@ class ReviewController(reviewRepository : ReviewRepository, contentRepository: C
 }
 
 data class CreateReviewRequest(val titleId: String, val reviewToCreate: ReviewDTO)
-data class ValorarReview(val reviewId: Long, val valorationDTO: ValorationDTO)
