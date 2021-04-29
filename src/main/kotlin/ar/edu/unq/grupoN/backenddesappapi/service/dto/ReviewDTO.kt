@@ -1,9 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.service.dto
 
-import ar.edu.unq.grupoN.backenddesappapi.model.ContentInfo
-import ar.edu.unq.grupoN.backenddesappapi.model.PublicReviewInfo
-import ar.edu.unq.grupoN.backenddesappapi.model.ReviewInfo
-import ar.edu.unq.grupoN.backenddesappapi.model.ValorationData
+import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.model.review.*
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
@@ -25,15 +22,15 @@ abstract class ReviewDTO {
                 val publicReview = review as Public
                 PublicDTO(review.id,review.cinematographicContent!!.titleId,
                 review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
-                    review.seasonNumber, review.episodeNumber, review.reviewType,
-                    review.valorations.map { ValorationDTO.fromModel(it) }, publicReview.includeSpoiler, publicReview.userId,
+                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valorationSum,
+                    review.usersWhoValued.map { ValorationDTO.fromModel(it) }, publicReview.includeSpoiler, publicReview.userId,
                     publicReview.username, publicReview.geographicLocation)
             } else {
                 val premiumReview = review as Premium
                 PremiumDTO(review.id,review.cinematographicContent!!.titleId,
                     review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
-                    review.seasonNumber, review.episodeNumber, review.reviewType,
-                    review.valorations.map { ValorationDTO.fromModel(it) }, premiumReview.reviewerId)
+                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valorationSum,
+                    review.usersWhoValued.map { ValorationDTO.fromModel(it) }, premiumReview.reviewerId)
             }
         }
     }
@@ -42,22 +39,23 @@ abstract class ReviewDTO {
 }
 
 class PublicDTO(
-                val id: Long?,
-                val cinematographicContentTitleId: String?,
-                val platform: String,
-                val language: String,
-                val resumeText: String,
-                val text: String,
-                val rating: Rating,
-                val date: LocalDateTime,
-                val seasonNumber: Int? = null,
-                val episodeNumber: Int? = null,
-                val reviewType: ReviewType,
-                val valorations: List<ValorationDTO> = mutableListOf(),
-                val includeSpoiler: Boolean = false,
-                val userId: String,
-                val username: String,
-                val geographicLocation: String) : ReviewDTO() {
+    val id: Long?,
+    val cinematographicContentTitleId: String?,
+    val platform: String,
+    val language: String,
+    val resumeText: String,
+    val text: String,
+    val rating: Rating,
+    val date: LocalDateTime,
+    val seasonNumber: Int? = null,
+    val episodeNumber: Int? = null,
+    val reviewType: ReviewType,
+    val valorationSum: Int,
+    val usersWhoValued: List<ValorationDTO> = mutableListOf(),
+    val includeSpoiler: Boolean = false,
+    val userId: String,
+    val username: String,
+    val geographicLocation: String) : ReviewDTO() {
 
     override fun toModel(): Review {
         val contentInfo = ContentInfo(null, platform, seasonNumber, episodeNumber)
@@ -69,19 +67,20 @@ class PublicDTO(
 }
 
 class PremiumDTO(
-                 val id: Long?,
-                 val cinematographicContentTitleId: String?,
-                 val platform: String,
-                 val language: String,
-                 val resumeText: String,
-                 val text: String,
-                 val rating: Rating,
-                 val date: LocalDateTime,
-                 val seasonNumber: Int? = null,
-                 val episodeNumber: Int? = null,
-                 val reviewType: ReviewType,
-                 val valorations: List<ValorationDTO> = mutableListOf(),
-                 val reviewerId: String) : ReviewDTO() {
+    val id: Long?,
+    val cinematographicContentTitleId: String?,
+    val platform: String,
+    val language: String,
+    val resumeText: String,
+    val text: String,
+    val rating: Rating,
+    val date: LocalDateTime,
+    val seasonNumber: Int? = null,
+    val episodeNumber: Int? = null,
+    val reviewType: ReviewType,
+    val valorationSum: Int,
+    val usersWhoValued: List<ValorationDTO> = mutableListOf(),
+    val reviewerId: String) : ReviewDTO() {
 
     override fun toModel(): Review {
         val contentInfo = ContentInfo(null, platform, seasonNumber, episodeNumber)
@@ -95,7 +94,8 @@ class PremiumDTO(
 data class ValorationDTO(
     var userId: String,
     var platform: String,
-    var valoration: Valoration)
+    var valoration: Valoration
+)
 {
     companion object {
         fun fromModel(valorationData: ValorationData): ValorationDTO {

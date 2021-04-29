@@ -1,7 +1,5 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
-import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.CinematographicContentService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
@@ -13,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @ServiceREST
 @RequestMapping("/api/review")
 @EnableAutoConfiguration
-class ReviewController(reviewRepository : ReviewRepository, contentRepository: CinematographicContentRepository) {
+class ReviewController {
 
     @Autowired
     private lateinit var reviewService: ReviewService
@@ -40,8 +38,8 @@ class ReviewController(reviewRepository : ReviewRepository, contentRepository: C
     }
 
     @GetMapping("/search")
-    fun getReviewsFrom(@RequestParam contentId:String):List<ReviewDTO>{
-        return reviewService.getReviewsWithContentId(contentId).map {
+    fun getReviewsFrom(@RequestParam titleId:String):List<ReviewDTO>{
+        return reviewService.findReviewsBy(titleId).map {
             ReviewDTO.fromModel(it)
         }
     }

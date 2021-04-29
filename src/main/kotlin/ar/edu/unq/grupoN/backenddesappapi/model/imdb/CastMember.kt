@@ -1,6 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
-import ar.edu.unq.grupoN.backenddesappapi.model.review.Employment
+import ar.edu.unq.grupoN.backenddesappapi.model.Employment
 import javax.persistence.*
 
 @Entity

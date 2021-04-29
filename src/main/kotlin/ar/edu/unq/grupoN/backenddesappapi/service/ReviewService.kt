@@ -33,12 +33,9 @@ class ReviewService{
     }
 
 
-    // Rename
     @Transactional
-    fun getReviewsWithContentId(contentId:String): List<Review>{
-        return repository.findAll().filter {
-            it.cinematographicContent!!.titleId.equals(contentId)
-        }
+    fun findReviewsBy(titleId:String): List<Review>{
+        return repository.findByCinematographicContentTitleIdOrderByValorationSumDesc(titleId)
     }
 
 

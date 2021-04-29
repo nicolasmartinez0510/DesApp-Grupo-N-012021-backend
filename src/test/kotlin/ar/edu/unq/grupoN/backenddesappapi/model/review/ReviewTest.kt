@@ -1,6 +1,9 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.review
 
 import ar.edu.unq.grupoN.backenddesappapi.Factory
+import ar.edu.unq.grupoN.backenddesappapi.model.Rating
+import ar.edu.unq.grupoN.backenddesappapi.model.ReviewType
+import ar.edu.unq.grupoN.backenddesappapi.model.Valoration
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
@@ -98,23 +101,23 @@ class ReviewTest {
     @Test
     fun `a public new review receive two dislikes and now have less rating`() {
         val review = factory.a_public_review()
-        val valorationBeforeReceiveValorations = review.valoration()
+        val valorationBeforeReceiveValorations = review.valorationSum
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
         review.rate(userId = "Fede", platform = "Netflix",valoration= Valoration.DISLIKE)
 
         val valorationAfterReceiveValorations = valorationBeforeReceiveValorations - 2
-        assertThat(review.valoration()).isEqualTo(valorationAfterReceiveValorations)
+        assertThat(review.valorationSum).isEqualTo(valorationAfterReceiveValorations)
     }
 
     @Test
     fun `a user from a platform who like two times a review count by one`() {
         val review = factory.a_public_review()
-        val valorationBeforeReceiveValorations = review.valoration()
+        val valorationBeforeReceiveValorations = review.valorationSum
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
 
         val valorationAfterReceiveValorations = valorationBeforeReceiveValorations + 1
-        assertThat(review.valoration()).isEqualTo(valorationAfterReceiveValorations)
+        assertThat(review.valorationSum).isEqualTo(valorationAfterReceiveValorations)
     }
 
     @Test

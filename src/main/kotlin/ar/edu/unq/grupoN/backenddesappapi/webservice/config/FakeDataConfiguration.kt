@@ -164,14 +164,14 @@ class FakeDataConfiguration {
 
            val publicReview = Public(contentInfo, reviewInfo, publicReviewInfo)
 
-            repeat(faker.number().numberBetween(1,3)){
+            repeat(faker.number().numberBetween(1,6)){
                 publicReview.rate(faker.name().username(),
                     faker.options().option(Platform::class.java).toString(),
                     faker.options().option(Valoration::class.java))
             }
 
             val premiumReview = Premium(contentInfo,reviewInfo, faker.rickAndMorty().character() +"Id")
-            repeat(faker.number().numberBetween(3,4)){
+            repeat(faker.number().numberBetween(2,4)){
                 premiumReview.rate(faker.name().username(),
                     faker.options().option(Platform::class.java).toString(),
                     faker.options().option(Valoration::class.java))

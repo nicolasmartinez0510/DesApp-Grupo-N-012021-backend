@@ -1,6 +1,7 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.review
 
 import ar.edu.unq.grupoN.backenddesappapi.Factory
+import ar.edu.unq.grupoN.backenddesappapi.model.Valoration
 import ar.edu.unq.grupoN.backenddesappapi.model.ValorationData
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -10,7 +11,7 @@ class ValorationDataTest {
     @Test
     fun `a valoration data knew his attributes afters set all`(){
         val anotherReview = Factory().a_public_review()
-        val valorationData = ValorationData(anotherReview,"ChestId","Netflix",Valoration.LIKE)
+        val valorationData = ValorationData(anotherReview,"ChestId","Netflix", Valoration.LIKE)
         valorationData.review = Factory().a_public_review()
         valorationData.userId = "AnotherId"
         valorationData.platform = "Amazon"
@@ -32,5 +33,5 @@ class ValorationDataTest {
     }
 
     private fun valorationFrom(userId: String, platform: String) =
-        ValorationData(Factory().a_public_review(),userId,platform,Valoration.DISLIKE)
+        ValorationData(Factory().a_public_review(),userId,platform, Valoration.DISLIKE)
 }
