@@ -7,14 +7,14 @@ import java.time.LocalDateTime
 
 class Factory {
 
-    fun a_public_review(): Public{
+    fun aPublicReview(): Public{
         val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, ReviewType.MOVIE, language)
         val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId,  geographicLocation)
-        val contentInfo = ContentInfo(gladiator_movie(), platform)
+        val contentInfo = ContentInfo(gladiatorMovie(), platform)
         return Public(contentInfo, reviewInfo, publicReviewInfo)
     }
 
-    fun public_review_on(
+    fun publicReviewOn(
         cinematographicContent: CinematographicContent, rating: Rating,
         reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Public {
@@ -32,7 +32,7 @@ class Factory {
         }
     }
 
-    fun premium_review_on(
+    fun premiumReviewOn(
         cinematographicContent: CinematographicContent,
         rating: Rating, reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Premium {
@@ -49,7 +49,7 @@ class Factory {
         }
     }
 
-    fun spartacus_serie(): Serie {
+    fun spartacusSerie(): Serie {
         val episode = Episode(1)
         episode.id = 3
         val seasons = Season(2, listOf(episode))
@@ -67,7 +67,7 @@ class Factory {
         return spartacus
     }
 
-    fun gladiator_movie(): Movie {
+    fun gladiatorMovie(): Movie {
         val basicInformation = BasicInformation(
             "GLADIIiiatoor45", "Gladiator",
             titleType, isAdult, startYear, runtimeMinutes
@@ -85,7 +85,7 @@ class Factory {
         return russell
     }
 
-    //Objects variables
+    //Objects atibutes
     val language = "English"
     val titleType = "movie"
     val isAdult = true

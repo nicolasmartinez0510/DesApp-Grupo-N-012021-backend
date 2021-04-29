@@ -14,10 +14,10 @@ class ReviewTest {
 
     @Test
     fun `a new public review on a serie episode`(){
-        val review = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
-            .isEqualTo(factory.spartacus_serie())
+            .isEqualTo(factory.spartacusSerie())
         assertThat(review.episodeNumber).isEqualTo(6)
         assertThat(review.seasonNumber).isEqualTo(2)
         assertThat(review.resumeText).isEqualTo(resumeText)
@@ -35,8 +35,8 @@ class ReviewTest {
 
     @Test
     fun `a public review set public review info`(){
-        val oldReview = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
-        val review = factory.public_review_on(factory.spartacus_serie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+        val oldReview = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
 
         review.geographicLocation = "Guadalajara"
         review.language = "Spanish"
@@ -52,20 +52,20 @@ class ReviewTest {
     }
     @Test
     fun `a new public review on a movie`(){
-        val review = factory.public_review_on(factory.gladiator_movie(), Rating.THREE, ReviewType.MOVIE)
+        val review = factory.publicReviewOn(factory.gladiatorMovie(), Rating.THREE, ReviewType.MOVIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
-            .isEqualTo(factory.gladiator_movie())
+            .isEqualTo(factory.gladiatorMovie())
         assertThat(review.reviewType).isEqualTo(ReviewType.MOVIE)
         assertThat(review.isPublic()).isTrue
     }
 
     @Test
     fun `a new premium review on a serie know his data and who is not a public review`(){
-        val review = factory.premium_review_on(factory.spartacus_serie(), Rating.ONE, ReviewType.SERIE)
+        val review = factory.premiumReviewOn(factory.spartacusSerie(), Rating.ONE, ReviewType.SERIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
-            .isEqualTo(factory.spartacus_serie())
+            .isEqualTo(factory.spartacusSerie())
         assertThat(review.reviewType).isEqualTo(ReviewType.SERIE)
         assertThat(review.reviewerId).isEqualTo(reviewerId)
         assertThat(review.isPublic()).isFalse
@@ -73,17 +73,17 @@ class ReviewTest {
 
     @Test
     fun `a new premium review on a movie`(){
-        val review = factory.premium_review_on(factory.gladiator_movie(), Rating.FIVE, ReviewType.MOVIE)
+        val review = factory.premiumReviewOn(factory.gladiatorMovie(), Rating.FIVE, ReviewType.MOVIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
-            .isEqualTo(factory.gladiator_movie())
+            .isEqualTo(factory.gladiatorMovie())
         assertThat(review.reviewType).isEqualTo(ReviewType.MOVIE)
         assertThat(review.reviewerId).isEqualTo(reviewerId)
     }
 
     @Test
     fun `a public new review recieve a like and now have a one like more`(){
-        val review = factory.a_public_review()
+        val review = factory.aPublicReview()
         review.rate(userId = "Nico", platform = "Netflix" ,valoration= Valoration.LIKE)
 
         assertThat(review.amountOf(Valoration.LIKE)).isEqualTo(1)
@@ -92,7 +92,7 @@ class ReviewTest {
 
     @Test
     fun `a public new review receive a dislike and now have a one dislike more`() {
-        val review = factory.a_public_review()
+        val review = factory.aPublicReview()
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
 
         assertThat(review.amountOf(Valoration.DISLIKE)).isEqualTo(1)
@@ -100,7 +100,7 @@ class ReviewTest {
 
     @Test
     fun `a public new review receive two dislikes and now have less rating`() {
-        val review = factory.a_public_review()
+        val review = factory.aPublicReview()
         val valorationBeforeReceiveValorations = review.valorationSum
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
         review.rate(userId = "Fede", platform = "Netflix",valoration= Valoration.DISLIKE)
@@ -111,7 +111,7 @@ class ReviewTest {
 
     @Test
     fun `a user from a platform who like two times a review count by one`() {
-        val review = factory.a_public_review()
+        val review = factory.aPublicReview()
         val valorationBeforeReceiveValorations = review.valorationSum
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
@@ -122,7 +122,7 @@ class ReviewTest {
 
     @Test
     fun `when a user from a platform who like and after dislike a review, review only has a dislike`() {
-        val review = factory.a_public_review()
+        val review = factory.aPublicReview()
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
 
