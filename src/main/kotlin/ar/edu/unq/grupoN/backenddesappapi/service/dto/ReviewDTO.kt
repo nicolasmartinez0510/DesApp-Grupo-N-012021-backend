@@ -1,84 +1,109 @@
 package ar.edu.unq.grupoN.backenddesappapi.service.dto
 
-import ar.edu.unq.grupoN.backenddesappapi.model.ValorationData
+import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.model.review.*
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import java.time.LocalDateTime
 
-abstract class ReviewDTO(review: Review) {
-    var cinematographicContentTitleId: String
-    var platform: String
-    var language: String
-    var resumeText: String
-    var text: String
-    var rating: Rating
-    var date: LocalDateTime
-    var seasonNumber: Int? = null
-    var episodeNumber: Int? = null
-    var valorations: List<ValorationDTO>
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.PROPERTY
+)
+@JsonSubTypes(
+    JsonSubTypes.Type(value = PublicDTO::class, name = "PUBLIC"),
+    JsonSubTypes.Type(value = PremiumDTO::class, name = "PREMIUM")
+)
+abstract class ReviewDTO {
 
     companion object {
         fun fromModel(review: Review): ReviewDTO {
             return if (review.isPublic()) {
-                PublicDTO(review as Public)
+                val publicReview = review as Public
+                PublicDTO(review.id,review.cinematographicContent!!.titleId,
+                review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
+                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valorationSum,
+                    review.usersWhoValued.map { ValorationDTO.fromModel(it) }, publicReview.includeSpoiler, publicReview.userId,
+                    publicReview.username, publicReview.geographicLocation)
             } else {
-                PremiumDTO(review as Premium)
+                val premiumReview = review as Premium
+                PremiumDTO(review.id,review.cinematographicContent!!.titleId,
+                    review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
+                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valorationSum,
+                    review.usersWhoValued.map { ValorationDTO.fromModel(it) }, premiumReview.reviewerId)
             }
         }
     }
 
-    init {
-        this.cinematographicContentTitleId = review.cinematographicContent.titleId
-        this.platform = review.platform
-        this.language = review.language
-        this.resumeText = review.resumeText
-        this.text = review.text
-        this.rating = review.rating
-        this.date = review.date
-        this.valorations = review.valorations.map { ValorationDTO(it) }
+    abstract fun toModel(): Review
+}
 
-        checkIfChapterReview(review)
+class PublicDTO(
+    val id: Long?,
+    val cinematographicContentTitleId: String?,
+    val platform: String,
+    val language: String,
+    val resumeText: String,
+    val text: String,
+    val rating: Rating,
+    val date: LocalDateTime,
+    val seasonNumber: Int? = null,
+    val episodeNumber: Int? = null,
+    val reviewType: ReviewType,
+    val valorationSum: Int,
+    val usersWhoValued: List<ValorationDTO> = mutableListOf(),
+    val includeSpoiler: Boolean = false,
+    val userId: String,
+    val username: String,
+    val geographicLocation: String) : ReviewDTO() {
+
+    override fun toModel(): Review {
+        val contentInfo = ContentInfo(null, platform, seasonNumber, episodeNumber)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, geographicLocation)
+
+        return Public(contentInfo, reviewInfo, publicReviewInfo)
     }
+}
 
-    fun checkIfChapterReview(review: Review) {
-        if (review.reviewType == ReviewType.CHAPTER) {
-            this.seasonNumber = review.seasonNumber
-            this.episodeNumber = review.episodeNumber
+class PremiumDTO(
+    val id: Long?,
+    val cinematographicContentTitleId: String?,
+    val platform: String,
+    val language: String,
+    val resumeText: String,
+    val text: String,
+    val rating: Rating,
+    val date: LocalDateTime,
+    val seasonNumber: Int? = null,
+    val episodeNumber: Int? = null,
+    val reviewType: ReviewType,
+    val valorationSum: Int,
+    val usersWhoValued: List<ValorationDTO> = mutableListOf(),
+    val reviewerId: String) : ReviewDTO() {
+
+    override fun toModel(): Review {
+        val contentInfo = ContentInfo(null, platform, seasonNumber, episodeNumber)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
+
+        return Premium(contentInfo, reviewInfo, reviewerId)
+    }
+}
+
+
+data class ValorationDTO(
+    var userId: String,
+    var platform: String,
+    var valoration: Valoration
+)
+{
+    companion object {
+        fun fromModel(valorationData: ValorationData): ValorationDTO {
+            return ValorationDTO(
+                valorationData.userId,
+                valorationData.platform,
+                valorationData.valoration
+            )
         }
     }
-}
-
-class PublicDTO(public_review: Public) : ReviewDTO(public_review) {
-    var includeSpoiler: Boolean = false
-    var userId: String
-    var username: String
-    var geographicLocation: String
-
-    init {
-        this.includeSpoiler = public_review.includeSpoiler
-        this.userId = public_review.userId
-        this.username = public_review.username
-        this.geographicLocation = public_review.geographicLocation
-    }
-}
-
-class PremiumDTO(premium_review: Premium) : ReviewDTO(premium_review) {
-    var reviewerId: String
-
-    init {
-        this.reviewerId = premium_review.reviewerId
-    }
-}
-
-
-class ValorationDTO(valorationData: ValorationData) {
-    var userId: String
-    var platform: String
-    var valoration: Valoration
-
-    init {
-        this.userId = valorationData.userId
-        this.platform = valorationData.platform
-        this.valoration = valorationData.valoration
-    }
-
 }

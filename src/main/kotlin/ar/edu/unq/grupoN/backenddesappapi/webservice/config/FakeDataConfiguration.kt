@@ -3,29 +3,32 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.config
 import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.*
 import ar.edu.unq.grupoN.backenddesappapi.model.review.*
-import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.CinematographicContentService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import com.github.javafaker.Faker
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Repository
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 @Configuration
+@Repository
 class FakeDataConfiguration {
     val faker = Faker()
 
+    @Autowired
+    private lateinit var cinematographicContentService : CinematographicContentService
+
+    @Autowired
+    private lateinit var reviewService: ReviewService
+
+
     @Bean
-    fun fakeMoviesAndSeriesInject(
-        cinematographicContentRepository: CinematographicContentRepository,
-        reviewRepository: ReviewRepository
-    ) =
+    fun fakeMoviesAndSeriesInject() =
         CommandLineRunner {
-            val cinematographicContentService = CinematographicContentService(cinematographicContentRepository)
-            val reviewService = ReviewService(reviewRepository)
             val amountOfEachContent = faker.number().numberBetween(4,6)
 
             createMovies(amountOfEachContent, cinematographicContentService, reviewService)
@@ -159,23 +162,24 @@ class FakeDataConfiguration {
                 platform = faker.options().option(Platform::class.java).toString()
             )
 
-           val public_review = Public(contentInfo, reviewInfo, publicReviewInfo)
+           val publicReview = Public(contentInfo, reviewInfo, publicReviewInfo)
 
-            repeat(faker.number().numberBetween(1,3)){
-                public_review.rate(faker.name().username(),
+            repeat(faker.number().numberBetween(1,6)){
+                publicReview.rate(faker.name().username(),
                     faker.options().option(Platform::class.java).toString(),
                     faker.options().option(Valoration::class.java))
             }
 
-            val premium_review = Premium(contentInfo,reviewInfo, faker.rickAndMorty().character() +"Id")
-            repeat(faker.number().numberBetween(3,4)){
-                premium_review.rate(faker.name().username(),
+            val premiumReview = Premium(contentInfo,reviewInfo, faker.rickAndMorty().character() +"Id")
+            repeat(faker.number().numberBetween(2,4)){
+                premiumReview.rate(faker.name().username(),
                     faker.options().option(Platform::class.java).toString(),
                     faker.options().option(Valoration::class.java))
             }
 
-            reviewService.add(public_review)
-            reviewService.add(premium_review)
+            reviewService.addFakeReview(publicReview)
+            reviewService.addFakeReview(premiumReview)
+
         }
     }
 

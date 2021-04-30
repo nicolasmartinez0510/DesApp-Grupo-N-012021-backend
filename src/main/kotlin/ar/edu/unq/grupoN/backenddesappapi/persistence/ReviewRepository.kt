@@ -1,6 +1,15 @@
 package ar.edu.unq.grupoN.backenddesappapi.persistence
 
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
+import org.springframework.context.annotation.Configuration
 import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
 
-interface ReviewRepository: CrudRepository<Review, Long?>
+
+@Repository
+@Configuration
+interface ReviewRepository: CrudRepository<Review, Long?> {
+
+    fun findByCinematographicContentTitleIdOrderByValorationSumDesc(titleId: String) : List<Review>
+
+}
