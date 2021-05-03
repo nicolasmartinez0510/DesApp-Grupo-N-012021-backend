@@ -20,6 +20,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     open lateinit var date: LocalDateTime
     open lateinit var language : String
     open var valorationSum: Int = 0
+    open lateinit var geographicLocation: String
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     open var usersWhoValued: MutableSet<ValorationData> = mutableSetOf()
     @Id
@@ -36,6 +37,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         this.date = reviewInfo.date
         this.language = reviewInfo.language
         this.reviewType = reviewInfo.reviewType
+        this.geographicLocation = reviewInfo.geographicLocation
     }
 
     fun rate(userId:String, platform:String, valoration: Valoration){

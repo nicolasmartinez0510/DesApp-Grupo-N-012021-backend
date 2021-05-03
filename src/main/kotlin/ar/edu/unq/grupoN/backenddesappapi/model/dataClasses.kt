@@ -16,13 +16,12 @@ data class ContentInfo(val cinematographicContent: CinematographicContent?, val 
                        val seasonNumber: Int? = null, val episodeNumber: Int? = null)
 
 data class ReviewInfo(val resumeText: String, val text: String, val rating: Rating, val date: LocalDateTime,
-                      val reviewType: ReviewType, val language: String)
+                      val reviewType: ReviewType, val language: String, val geographicLocation: String)
 
 data class PublicReviewInfo(
     val includeSpoiler: Boolean,
     val username: String,
-    val userId: String,
-    val geographicLocation: String
+    val userId: String
 )
 
 data class SerieInfo(val endYear: Int?, val seasons: List<Season>)
