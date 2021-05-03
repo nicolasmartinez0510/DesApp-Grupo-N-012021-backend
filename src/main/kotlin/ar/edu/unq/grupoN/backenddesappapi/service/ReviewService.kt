@@ -1,12 +1,14 @@
 package ar.edu.unq.grupoN.backenddesappapi.service
 
 
+import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.lang.RuntimeException
 import java.util.*
 
 @Service
@@ -20,9 +22,10 @@ class ReviewService{
 
     @Transactional
     fun saveReview(titleId: String, review: Review): Review {
-        //TODO: verificaciones
         val content = contentRepository.findById(titleId).get()
         review.cinematographicContent = content
+
+        validateReview(review)
 
         return repository.save(review)
     }
@@ -31,7 +34,6 @@ class ReviewService{
     fun update(review: Review){
         repository.save(review)
     }
-
 
     @Transactional
     fun findReviewsBy(titleId:String): List<Review>{
@@ -44,11 +46,15 @@ class ReviewService{
         return repository.findById(id)
     }
 
+
     @Transactional
     fun addFakeReview(review: Review): Review {
 
         return repository.save(review)
     }
 
-    fun findAll() = repository.findAll()
+    @Transactional
+    fun findAll(): MutableIterable<Review> = repository.findAll()
+
+    private fun validateReview(review: Review) = review.validate()
 }

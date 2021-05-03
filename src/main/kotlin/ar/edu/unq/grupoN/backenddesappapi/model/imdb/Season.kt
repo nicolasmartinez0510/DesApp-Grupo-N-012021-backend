@@ -9,4 +9,8 @@ data class Season(val number:Int,
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
+
+    fun isSeason(seasonNumber: Int?) = seasonNumber == this.number
+
+    fun haveEpisode(episodeNumber: Int?) = episodes.any { it.number == episodeNumber }
 }

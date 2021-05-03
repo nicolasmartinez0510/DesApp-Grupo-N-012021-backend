@@ -1,11 +1,10 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.review
 
 import ar.edu.unq.grupoN.backenddesappapi.Factory
-import ar.edu.unq.grupoN.backenddesappapi.model.Rating
-import ar.edu.unq.grupoN.backenddesappapi.model.ReviewType
-import ar.edu.unq.grupoN.backenddesappapi.model.Valoration
+import ar.edu.unq.grupoN.backenddesappapi.model.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.LocalDateTime
 
 
@@ -129,6 +128,48 @@ class ReviewTest {
         assertThat(review.amountOf(Valoration.DISLIKE)).isEqualTo(1)
         assertThat(review.amountOf(Valoration.LIKE)).isEqualTo(0)
     }
+
+    @Test
+    fun `throws an exception when validate a review with movie type, but his content is a serie`(){
+        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.MOVIE)
+
+        val exception = assertThrows<RuntimeException> { review.validate() }
+        assertThat("Invalid review type, 'Spartacus' is a Serie").isEqualTo(exception.message)
+    }
+
+
+    @Test
+    fun `throws an exception when validate a review with serie type, but his content is a movie`(){
+        val review = factory.publicReviewOn(factory.gladiatorMovie(), Rating.FOUR, ReviewType.SERIE)
+
+        val exception = assertThrows<InvalidReviewTypeException> { review.validate() }
+        assertThat("Invalid review type, 'Gladiator' is a Movie").isEqualTo(exception.message)
+    }
+
+    @Test
+    fun `throws an exception when validate a review with chapter type, but his content is a movie`(){
+        val review = factory.publicReviewOn(factory.gladiatorMovie(), Rating.FOUR, ReviewType.CHAPTER)
+
+        val exception = assertThrows<InvalidReviewTypeException> { review.validate() }
+        assertThat("Invalid review type, 'Gladiator' is a Movie").isEqualTo(exception.message)
+    }
+
+    @Test
+    fun `throws an exception when validate a review with chapter type, but episode doesn't exist`(){
+        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+
+        val exception = assertThrows<DoesNotExistChapterException> { review.validate() }
+        assertThat("This chapter doesn't exist in 'Spartacus' yet").isEqualTo(exception.message)
+    }
+
+    @Test
+    fun `throws an exception when validate a review with chapter type, but episode or season number is null`(){
+        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER)
+
+        val exception = assertThrows<InvalidSeasonOrEpisodeNumberException> { review.validate() }
+        assertThat("Invalid season or episode number, in a chapter review, both must be a number").isEqualTo(exception.message)
+    }
+
 
     private val resumeText = "Lorem Ipsum has been the industry's standard dummy"
     private val text = "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."

@@ -42,4 +42,6 @@ abstract class CinematographicContent(){
         this.averageRating = rating.averageRating
         this.votesAmount = rating.votesAmount
     }
+
+    open fun haveEpisode(seasonNumber: Int?, episodeNumber: Int?) = false
 }

@@ -25,4 +25,10 @@ class Serie(
     }
 
     override fun isSerie() = true
+
+    override fun haveEpisode(seasonNumber: Int?, episodeNumber: Int?): Boolean {
+        val searchedSeason = seasons.firstOrNull { it.isSeason(seasonNumber) }
+
+        return searchedSeason?.haveEpisode(episodeNumber) ?: false
+    }
 }

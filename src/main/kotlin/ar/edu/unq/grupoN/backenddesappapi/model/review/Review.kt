@@ -75,6 +75,14 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         }
     }
 
+    fun validate() {
+        if (reviewType == ReviewType.SERIE || reviewType == ReviewType.MOVIE){
+            episodeNumber = null
+            seasonNumber  = null
+        }
+        this.cinematographicContent?.let { reviewType.validate(it, this) }
+    }
+
 }
 
 
