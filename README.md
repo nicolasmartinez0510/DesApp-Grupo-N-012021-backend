@@ -28,4 +28,7 @@
 
 * Trello: https://trello.com/b/6np41hOA/kanban
 
-* Informe Sprint 1: https://docs.google.com/document/d/1gCh5ZbekfdmNAQkgKwwFEfp68je2dYk2_-2acXgPTtM/edit 
+* Informe Sprint 1: https://docs.google.com/document/d/1gCh5ZbekfdmNAQkgKwwFEfp68je2dYk2_-2acXgPTtM/edit?usp=sharing
+
+
+
