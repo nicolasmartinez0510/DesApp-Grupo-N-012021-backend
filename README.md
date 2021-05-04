@@ -25,3 +25,5 @@
 * Integración continua: Travis-CI [![Build Status](https://travis-ci.com/nicolasmartinez0510/DesApp-Grupo-N-012021-backend.svg?branch=main)](https://travis-ci.com/nicolasmartinez0510/DesApp-Grupo-N-012021-backend)
 
 * Deploy in Heroku:https://desapp-grupo-n-012021-backend.herokuapp.com/
+
+* Informe Sprint 1: https://docs.google.com/document/d/1gCh5ZbekfdmNAQkgKwwFEfp68je2dYk2_-2acXgPTtM/edit 
