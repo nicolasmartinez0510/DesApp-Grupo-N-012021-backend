@@ -31,9 +31,9 @@ class FakeDataConfiguration {
         CommandLineRunner {
             val amountOfEachContent = faker.number().numberBetween(4,6)
 
+            createDataToSwagger(cinematographicContentService, reviewService)
             createMovies(amountOfEachContent, cinematographicContentService, reviewService)
             createSeries(amountOfEachContent, cinematographicContentService, reviewService)
-
         }
 
     // private auxiliar functions for generate fake data.
@@ -142,6 +142,7 @@ class FakeDataConfiguration {
                 date = faker.date().past(3000, TimeUnit.DAYS)
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                 language = faker.options().option(Language::class.java).toString(),
+                geographicLocation = faker.address().country(),
                 reviewType =
                 if (content.isSerie()) {
                     ReviewType.SERIE
@@ -153,8 +154,7 @@ class FakeDataConfiguration {
             val publicReviewInfo = PublicReviewInfo(
                 includeSpoiler = faker.bool().bool(),
                 username = username,
-                userId = username + faker.number().numberBetween(0, 500000),
-                geographicLocation = faker.address().country()
+                userId = username + faker.number().numberBetween(0, 500000)
             )
 
             val contentInfo = ContentInfo(
@@ -181,6 +181,47 @@ class FakeDataConfiguration {
             reviewService.addFakeReview(premiumReview)
 
         }
+    }
+
+    private fun createDataToSwagger(
+        cinematographicContentService: CinematographicContentService,
+        reviewService: ReviewService
+    ) {
+        val gladiatorMovie =
+            Movie(
+                basicInformation = getBasicInformation(),
+                cast = getCastMembers(faker.number().numberBetween(5,8)),
+                rating = getRatingInfo()
+            )
+
+        val reviewInfo = ReviewInfo(
+            resumeText = faker.lorem().sentence(),
+            text = "TEXT " + faker.lorem().sentence(),
+            rating = faker.options().option(Rating::class.java),
+            date = faker.date().past(3000, TimeUnit.DAYS)
+                .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+            language = faker.options().option(Language::class.java).toString(),
+            geographicLocation = faker.address().country(),
+            reviewType = ReviewType.MOVIE
+        )
+        val username = faker.name().username()
+        val publicReviewInfo = PublicReviewInfo(
+            includeSpoiler = faker.bool().bool(),
+            username = username,
+            userId = username + faker.number().numberBetween(0, 500000)
+        )
+
+        val contentInfo = ContentInfo(
+            cinematographicContent = gladiatorMovie,
+            platform = faker.options().option(Platform::class.java).toString()
+        )
+        val publicReview = Public(contentInfo, reviewInfo, publicReviewInfo)
+        gladiatorMovie.titleId = "GladiatorID"
+        gladiatorMovie.title = "Gladiator"
+
+        cinematographicContentService.add(gladiatorMovie)
+        reviewService.addFakeReview(publicReview)
+
     }
 
     private enum class Platform {

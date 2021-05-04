@@ -8,8 +8,8 @@ import java.time.LocalDateTime
 class Factory {
 
     fun aPublicReview(): Public{
-        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, ReviewType.MOVIE, language)
-        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId,  geographicLocation)
+        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, ReviewType.MOVIE, language, geographicLocation)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId)
         val contentInfo = ContentInfo(gladiatorMovie(), platform)
         return Public(contentInfo, reviewInfo, publicReviewInfo)
     }
@@ -18,8 +18,8 @@ class Factory {
         cinematographicContent: CinematographicContent, rating: Rating,
         reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Public {
-        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
-        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, geographicLocation)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language, geographicLocation)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId)
 
         return if (cinematographicContent.isSerie()) {
             val serie: Serie = cinematographicContent as Serie
@@ -36,7 +36,7 @@ class Factory {
         cinematographicContent: CinematographicContent,
         rating: Rating, reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Premium {
-        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language, geographicLocation)
         val reviewerId = "ASDFfktuyPTi9r8rY"
         return if (cinematographicContent.isSerie()) {
             val serie: Serie = cinematographicContent as Serie

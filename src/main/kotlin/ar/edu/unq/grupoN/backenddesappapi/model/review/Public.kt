@@ -15,13 +15,11 @@ class Public(contentInfo: ContentInfo, reviewInfo: ReviewInfo, publicReviewInfo:
     var includeSpoiler: Boolean = false
     var userId: String
     var username: String
-    var geographicLocation: String
 
     init {
         this.includeSpoiler = publicReviewInfo.includeSpoiler
         this.username = publicReviewInfo.username
         this.userId = publicReviewInfo.userId
-        this.geographicLocation = publicReviewInfo.geographicLocation
     }
 
     override fun isPublic() = true
