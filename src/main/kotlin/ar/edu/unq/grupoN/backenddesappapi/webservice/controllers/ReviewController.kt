@@ -66,7 +66,7 @@ class ReviewController {
     )
     @RequestMapping(value = ["/rate/{reviewId}"], method = [RequestMethod.POST])
     fun rate(
-        @ApiParam(value = "reviewId", example = "7", required = true)
+        @ApiParam(value = "reviewId", example = "1", required = true)
         @PathVariable reviewId: Long,
         @RequestBody valorationDTO: ValorationDTO): ResponseEntity<*>? {
         val review = try {

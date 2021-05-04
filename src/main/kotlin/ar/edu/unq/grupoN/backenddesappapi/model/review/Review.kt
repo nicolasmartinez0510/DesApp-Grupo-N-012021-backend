@@ -24,7 +24,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     open var usersWhoValued: MutableSet<ValorationData> = mutableSetOf()
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     open var id: Long? = null
 
     init {
