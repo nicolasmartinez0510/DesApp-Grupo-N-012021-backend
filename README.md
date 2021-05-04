@@ -26,4 +26,6 @@
 
 * Deploy in Heroku:https://desapp-grupo-n-012021-backend.herokuapp.com/
 
+* Trello: https://trello.com/b/6np41hOA/kanban
+
 * Informe Sprint 1: https://docs.google.com/document/d/1gCh5ZbekfdmNAQkgKwwFEfp68je2dYk2_-2acXgPTtM/edit 
