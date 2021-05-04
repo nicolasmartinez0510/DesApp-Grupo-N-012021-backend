@@ -12,14 +12,14 @@ class CinematographicContentTest {
 
     @BeforeEach
     fun setUp(){
-        spartacus = factory.spartacus_serie()
-        gladiator = factory.gladiator_movie()
+        spartacus = factory.spartacusSerie()
+        gladiator = factory.gladiatorMovie()
     }
 
     @Test
     fun `a cinematographic content know all IMDb information`(){
         assertThat(gladiator).usingRecursiveComparison()
-            .isEqualTo(factory.gladiator_movie())
+            .isEqualTo(factory.gladiatorMovie())
         assertThat(gladiator.isAdultContent).isTrue()
     }
 

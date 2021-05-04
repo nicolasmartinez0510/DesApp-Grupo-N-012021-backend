@@ -1,7 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
-import ar.edu.unq.grupoN.backenddesappapi.model.Cast
 import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
 import ar.edu.unq.grupoN.backenddesappapi.model.SerieInfo
 import javax.persistence.*
@@ -10,7 +9,7 @@ import javax.persistence.*
 @PrimaryKeyJoinColumn(name="titleId")
 class Serie(
     basicInformation: BasicInformation,
-    cast: Cast,
+    cast: MutableList<CastMember>,
     rating: RatingInfo,
     serieInfo: SerieInfo
 ) :  CinematographicContent(basicInformation, cast, rating){
@@ -26,4 +25,10 @@ class Serie(
     }
 
     override fun isSerie() = true
+
+    override fun haveEpisode(seasonNumber: Int?, episodeNumber: Int?): Boolean {
+        val searchedSeason = seasons.firstOrNull { it.isSeason(seasonNumber) }
+
+        return searchedSeason?.haveEpisode(episodeNumber) ?: false
+    }
 }

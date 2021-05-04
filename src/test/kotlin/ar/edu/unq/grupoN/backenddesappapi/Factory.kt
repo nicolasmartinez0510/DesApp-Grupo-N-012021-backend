@@ -7,19 +7,19 @@ import java.time.LocalDateTime
 
 class Factory {
 
-    fun a_public_review(): Public{
-        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, IsAChapterReview.ISAMOVIE)
-        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, language, geographicLocation)
-        val contentInfo = ContentInfo(gladiator_movie(), platform)
+    fun aPublicReview(): Public{
+        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, ReviewType.MOVIE, language, geographicLocation)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId)
+        val contentInfo = ContentInfo(gladiatorMovie(), platform)
         return Public(contentInfo, reviewInfo, publicReviewInfo)
     }
 
-    fun public_review_on(
+    fun publicReviewOn(
         cinematographicContent: CinematographicContent, rating: Rating,
-        isAChapterReview: IsAChapterReview, seasonNumber: Int? = null, episodeNumber: Int? = null
+        reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Public {
-        val reviewInfo = ReviewInfo(resumeText, text, rating, date, isAChapterReview)
-        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId, language, geographicLocation)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language, geographicLocation)
+        val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId)
 
         return if (cinematographicContent.isSerie()) {
             val serie: Serie = cinematographicContent as Serie
@@ -32,11 +32,11 @@ class Factory {
         }
     }
 
-    fun premium_review_on(
+    fun premiumReviewOn(
         cinematographicContent: CinematographicContent,
-        rating: Rating, isAChapterReview: IsAChapterReview, seasonNumber: Int? = null, episodeNumber: Int? = null
+        rating: Rating, reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Premium {
-        val reviewInfo = ReviewInfo(resumeText, text, rating, date, isAChapterReview)
+        val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language, geographicLocation)
         val reviewerId = "ASDFfktuyPTi9r8rY"
         return if (cinematographicContent.isSerie()) {
             val serie: Serie = cinematographicContent as Serie
@@ -49,7 +49,7 @@ class Factory {
         }
     }
 
-    fun spartacus_serie(): Serie {
+    fun spartacusSerie(): Serie {
         val episode = Episode(1)
         episode.id = 3
         val seasons = Season(2, listOf(episode))
@@ -58,7 +58,6 @@ class Factory {
             "SPTKSukq4sk893", "Spartacus",
             titleType, isAdult, 2010, runtimeMinutes
         )
-        val cast = Cast(directors, writers, actors)
         val rating = RatingInfo(averageRating, numVotes)
         val serieInfo = SerieInfo(2013, listOf())
         val spartacus = Serie(basicInformation, cast, rating, serieInfo)
@@ -68,12 +67,11 @@ class Factory {
         return spartacus
     }
 
-    fun gladiator_movie(): Movie {
+    fun gladiatorMovie(): Movie {
         val basicInformation = BasicInformation(
             "GLADIIiiatoor45", "Gladiator",
             titleType, isAdult, startYear, runtimeMinutes
         )
-        val cast = Cast(directors, writers, actors)
         val rating = RatingInfo(averageRating, numVotes)
 
         return Movie(basicInformation, cast, rating)
@@ -81,24 +79,21 @@ class Factory {
 
     fun genericCastMember(): CastMember {
         val russell = CastMember(
-            "Russell Crowe", "Actor",
+            "Russell Crowe", Employment.ACTOR,
             null, "Maximus", 9999, 9999
         )
-        russell.id = 78
         return russell
     }
 
-    //Objects variables
+    //Objects atibutes
     val language = "English"
     val titleType = "movie"
     val isAdult = true
     val startYear = 2000
     val runtimeMinutes = 155
-    val directors = listOf(genericCastMember())
-    val writers = listOf(genericCastMember(), genericCastMember(), genericCastMember())
+    val cast = mutableListOf(genericCastMember())
     val averageRating = 4.9
     val numVotes = 1355421
-    val actors = listOf(genericCastMember())
 
     val resumeText = "Lorem Ipsum has been the industry's standard dummy"
     val text =

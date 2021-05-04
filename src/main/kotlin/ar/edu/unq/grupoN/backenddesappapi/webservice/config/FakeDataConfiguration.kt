@@ -1,0 +1,235 @@
+package ar.edu.unq.grupoN.backenddesappapi.webservice.config
+
+import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.model.imdb.*
+import ar.edu.unq.grupoN.backenddesappapi.model.review.*
+import ar.edu.unq.grupoN.backenddesappapi.service.CinematographicContentService
+import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
+import com.github.javafaker.Faker
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.CommandLineRunner
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Repository
+import java.time.ZoneId
+import java.util.concurrent.TimeUnit
+
+@Configuration
+@Repository
+class FakeDataConfiguration {
+    val faker = Faker()
+
+    @Autowired
+    private lateinit var cinematographicContentService : CinematographicContentService
+
+    @Autowired
+    private lateinit var reviewService: ReviewService
+
+
+    @Bean
+    fun fakeMoviesAndSeriesInject() =
+        CommandLineRunner {
+            val amountOfEachContent = faker.number().numberBetween(4,6)
+
+            createDataToSwagger(cinematographicContentService, reviewService)
+            createMovies(amountOfEachContent, cinematographicContentService, reviewService)
+            createSeries(amountOfEachContent, cinematographicContentService, reviewService)
+        }
+
+    // private auxiliar functions for generate fake data.
+    private fun createSeries(
+        amount: Int,
+        cinematographicContentService: CinematographicContentService,
+        reviewService: ReviewService
+    ) {
+        repeat(amount) {
+            val serieInfo =
+                SerieInfo(
+                    endYear = faker.number().numberBetween(2000, 2021),
+                    seasons = mutableListOf(Season(1, mutableListOf(Episode(1), Episode(2))))
+                )
+
+            val serie =
+                Serie(
+                    basicInformation = getBasicInformation(),
+                    cast = getCastMembers(5),
+                    rating = getRatingInfo(),
+                    serieInfo = serieInfo
+                )
+
+            cinematographicContentService.add(serie)
+
+            generateReviews(
+                cantidad = 2,
+                content = serie,
+                reviewService = reviewService
+            )
+        }
+    }
+
+    private fun createMovies(
+        amount: Int,
+        cinematographicContentService: CinematographicContentService,
+        reviewService: ReviewService
+    ) {
+        repeat(amount) {
+            val newMovie =
+                Movie(
+                    basicInformation = getBasicInformation(),
+                    cast = getCastMembers(faker.number().numberBetween(5,8)),
+                    rating = getRatingInfo()
+                )
+
+            cinematographicContentService.add(newMovie)
+
+            generateReviews(
+                cantidad = faker.number().numberBetween(2,4),
+                content = newMovie,
+                reviewService = reviewService
+            )
+        }
+    }
+
+
+    private fun getBasicInformation(): BasicInformation {
+        val title = faker.book().title()
+        return BasicInformation(
+            titleId = (title + "-" + faker.code().isbn10() + "-" + "id").replace("\\s".toRegex(), ""),
+            title = title,
+            titleType = "Adventure",
+            isAdultContent = faker.bool().bool(),
+            startYear = faker.number().numberBetween(1990, 2000),
+            runtimeMinutes = faker.number().numberBetween(100, 1000)
+        )
+    }
+
+    private fun getCastMembers(amount: Int): MutableList<CastMember> {
+        val cast: MutableList<CastMember> = mutableListOf()
+
+        repeat(amount) {
+            cast.add(
+                genericCastMember(
+                    name = faker.name().fullName(),
+                    employment = faker.options().option(Employment::class.java)
+                )
+            )
+        }
+        return cast
+    }
+
+    private fun getRatingInfo() = RatingInfo(
+        averageRating = faker.number().randomDouble(2, 3, 10),
+        votesAmount = faker.number().numberBetween(2, 9999989)
+    )
+
+    private fun genericCastMember(name: String, employment: Employment): CastMember {
+        return CastMember(
+            name = name,
+            employment = employment,
+            job = null,
+            character = faker.funnyName().name(),
+            birthYear = faker.number().numberBetween(1850, 1986),
+            deathYear = faker.number().numberBetween(2005, 2021)
+        )
+    }
+
+    private fun generateReviews(cantidad: Int, content: CinematographicContent, reviewService: ReviewService) {
+        repeat(cantidad) {
+            val reviewInfo = ReviewInfo(
+                resumeText = faker.lorem().sentence(),
+                text = "TEXT " + faker.lorem().sentence(),
+                rating = faker.options().option(Rating::class.java),
+                date = faker.date().past(3000, TimeUnit.DAYS)
+                    .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+                language = faker.options().option(Language::class.java).toString(),
+                geographicLocation = faker.address().country(),
+                reviewType =
+                if (content.isSerie()) {
+                    ReviewType.SERIE
+                } else {
+                    ReviewType.MOVIE
+                }
+            )
+            val username = faker.name().username()
+            val publicReviewInfo = PublicReviewInfo(
+                includeSpoiler = faker.bool().bool(),
+                username = username,
+                userId = username + faker.number().numberBetween(0, 500000)
+            )
+
+            val contentInfo = ContentInfo(
+                cinematographicContent = content,
+                platform = faker.options().option(Platform::class.java).toString()
+            )
+
+           val publicReview = Public(contentInfo, reviewInfo, publicReviewInfo)
+
+            repeat(faker.number().numberBetween(1,6)){
+                publicReview.rate(faker.name().username(),
+                    faker.options().option(Platform::class.java).toString(),
+                    faker.options().option(Valoration::class.java))
+            }
+
+            val premiumReview = Premium(contentInfo,reviewInfo, faker.rickAndMorty().character() +"Id")
+            repeat(faker.number().numberBetween(2,4)){
+                premiumReview.rate(faker.name().username(),
+                    faker.options().option(Platform::class.java).toString(),
+                    faker.options().option(Valoration::class.java))
+            }
+
+            reviewService.addFakeReview(publicReview)
+            reviewService.addFakeReview(premiumReview)
+
+        }
+    }
+
+    private fun createDataToSwagger(
+        cinematographicContentService: CinematographicContentService,
+        reviewService: ReviewService
+    ) {
+        val gladiatorMovie =
+            Movie(
+                basicInformation = getBasicInformation(),
+                cast = getCastMembers(faker.number().numberBetween(5,8)),
+                rating = getRatingInfo()
+            )
+
+        val reviewInfo = ReviewInfo(
+            resumeText = faker.lorem().sentence(),
+            text = "TEXT " + faker.lorem().sentence(),
+            rating = faker.options().option(Rating::class.java),
+            date = faker.date().past(3000, TimeUnit.DAYS)
+                .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
+            language = faker.options().option(Language::class.java).toString(),
+            geographicLocation = faker.address().country(),
+            reviewType = ReviewType.MOVIE
+        )
+        val username = faker.name().username()
+        val publicReviewInfo = PublicReviewInfo(
+            includeSpoiler = faker.bool().bool(),
+            username = username,
+            userId = username + faker.number().numberBetween(0, 500000)
+        )
+
+        val contentInfo = ContentInfo(
+            cinematographicContent = gladiatorMovie,
+            platform = faker.options().option(Platform::class.java).toString()
+        )
+        val publicReview = Public(contentInfo, reviewInfo, publicReviewInfo)
+        gladiatorMovie.titleId = "GladiatorID"
+        gladiatorMovie.title = "Gladiator"
+
+        cinematographicContentService.add(gladiatorMovie)
+        reviewService.addFakeReview(publicReview)
+
+    }
+
+    private enum class Platform {
+        NETFLIX, AMAZON, PLEX, DISNEY
+    }
+
+    private enum class Language {
+        ENGLISH, FRENCH, SPANISH, PORTUGUESE, LATIN, ARAMIC, RUSSIAN
+    }
+
+}
