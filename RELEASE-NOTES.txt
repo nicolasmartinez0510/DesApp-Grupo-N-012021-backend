@@ -1,0 +1,20 @@
+------------------------------------------------------------------------------------
+TAG ENTREGA 1.0
+------------------------------------------------------------------------------------
+NEW FEATURES:
+ * created repository on GitHub.
+ * configure API backend with SprintBoot.
+ * config Travis backend.
+ * build backend.
+ * config code reports with Codacy.
+ * automatics deploys with Heroku.
+ * swagger configuration.
+ * fake data generation.
+ * model coverage +90%
+ * created endpoints: create review, valorate review and search reviews by titleId
+
+NOTES:
+* -
+
+KNOWN ISSUES:
+* -

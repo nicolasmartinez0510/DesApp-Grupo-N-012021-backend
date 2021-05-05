@@ -15,7 +15,6 @@ import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 @Configuration
-@Repository
 class FakeDataConfiguration {
     val faker = Faker()
 
@@ -218,6 +217,7 @@ class FakeDataConfiguration {
         val publicReview = Public(contentInfo, reviewInfo, publicReviewInfo)
         gladiatorMovie.titleId = "GladiatorID"
         gladiatorMovie.title = "Gladiator"
+        publicReview.id = 1
 
         cinematographicContentService.add(gladiatorMovie)
         reviewService.addFakeReview(publicReview)
