@@ -19,7 +19,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     open lateinit var rating: Rating
     open lateinit var date: LocalDateTime
     open lateinit var language : String
-    open var valorationSum: Int = 0
+    open var valoration: Int = 0
     open lateinit var geographicLocation: String
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     open var usersWhoValued: MutableSet<ValorationData> = mutableSetOf()
@@ -44,18 +44,15 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         val existingValoration: ValorationData? = usersWhoValued.firstOrNull {
                 aValoration -> aValoration.isFromUser(userId, platform)
         }
+
         if (existingValoration == null) {
             val newValoration = createValoration(userId, platform, valoration)
             usersWhoValued.add(newValoration)
-            operationOverValoration(valoration)
         } else {
-            checkOperation(existingValoration, valoration)
             existingValoration.valoration = valoration
         }
-    }
 
-    fun amountOf(valoration: Valoration):Int{
-        return counter(valoration)
+        updateValoration()
     }
 
     open fun isPublic() = false
@@ -63,18 +60,16 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     private fun createValoration(userId: String, platform: String, valoration: Valoration) =
         ValorationData(this, userId, platform, valoration)
 
+    private fun updateValoration() {
+        valoration = amountOf(Valoration.LIKE) - amountOf(Valoration.DISLIKE)
+    }
+
+    private fun amountOf(valoration: Valoration):Int{
+        return counter(valoration)
+    }
+
     private fun counter(valorationToFind: Valoration):Int{
         return usersWhoValued.count { it.valoration == valorationToFind }
-    }
-
-    private fun operationOverValoration(valoration: Valoration) {
-        this.valorationSum += valoration.toInt()
-    }
-
-    private fun checkOperation(existingValoration: ValorationData, newValoration: Valoration) {
-        if (existingValoration.valoration != newValoration){
-            operationOverValoration(newValoration)
-        }
     }
 
     fun validate() {

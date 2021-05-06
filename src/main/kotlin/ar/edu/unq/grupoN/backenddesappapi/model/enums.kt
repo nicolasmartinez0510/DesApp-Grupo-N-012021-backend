@@ -42,14 +42,7 @@ enum class ReviewType {
 }
 
 enum class Valoration {
-    LIKE {
-        override fun toInt() = 1
-    },
-    DISLIKE {
-        override fun toInt() = -1
-    };
-
-    abstract fun toInt(): Int
+    LIKE, DISLIKE;
 }
 
 enum class Employment {
