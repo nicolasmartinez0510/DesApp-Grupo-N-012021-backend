@@ -1,5 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
+import ar.edu.unq.grupoN.backenddesappapi.model.ReviewTypeException
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO
@@ -45,16 +46,13 @@ class ReviewController {
     )
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
-        val myReview = createReviewRequest.reviewToCreate.toModel()
-
-        try {
-            reviewService.saveReview(createReviewRequest.titleId, myReview)
-        } catch (e: RuntimeException) {
-
-            return createExceptionResponse(e)
+        val review : ReviewDTO = try {
+            reviewService.saveReview(createReviewRequest)
+        } catch (e: ReviewTypeException) {
+            return ResponseEntity.badRequest().body(createExceptionResponse(e))
         }
 
-        return ResponseEntity.ok().body(ReviewDTO.fromModel(myReview))
+        return ResponseEntity.ok().body(review)
     }
 
     @ApiOperation( value = "Rate a review. If the same user from the same platform rate a review more than one time," +
@@ -73,7 +71,7 @@ class ReviewController {
             reviewService.findById(reviewId).get()
         } catch (e: NoSuchElementException) {
 
-            return createExceptionResponse(e)
+            return ResponseEntity.badRequest().body(createExceptionResponse(e))
         }
         review.rate(valorationDTO.userId, valorationDTO.platform, valorationDTO.valoration)
         reviewService.update(review = review)
@@ -102,12 +100,12 @@ class ReviewController {
         return ResponseEntity.ok().body(reviews)
     }
 
-    private fun createExceptionResponse(e: Exception): ResponseEntity<MutableMap<String, String>> {
+    private fun createExceptionResponse(e: Exception): MutableMap<String, String> {
         val exceptionResponse = mutableMapOf<String, String>()
-        exceptionResponse["type"] = e::class.simpleName.toString()
+        exceptionResponse["error"] = e::class.simpleName.toString()
         exceptionResponse["message"] = e.message.toString()
 
-        return ResponseEntity.badRequest().body(exceptionResponse)
+        return exceptionResponse
     }
 
 }

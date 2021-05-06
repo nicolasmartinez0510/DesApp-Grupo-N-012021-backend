@@ -1,8 +1,11 @@
 package ar.edu.unq.grupoN.backenddesappapi.service
 
+import ar.edu.unq.grupoN.backenddesappapi.model.ReviewTypeException
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
+import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -18,13 +21,15 @@ class ReviewService{
     private lateinit var contentRepository: CinematographicContentRepository
 
     @Transactional
-    fun saveReview(titleId: String, review: Review): Review {
-        val content = contentRepository.findById(titleId).get()
+    fun saveReview(createReviewRequest: CreateReviewRequest): ReviewDTO {
+        val content = contentRepository.findById(createReviewRequest.titleId).get()
+        var review = createReviewRequest.reviewToCreate.toModel()
         review.cinematographicContent = content
 
-        validateReview(review)
+        review.validate()
+        review = repository.save(review)
 
-        return repository.save(review)
+        return ReviewDTO.fromModel(review)
     }
 
     @Transactional
@@ -34,7 +39,7 @@ class ReviewService{
 
     @Transactional
     fun findReviewsBy(titleId:String): List<Review>{
-        return repository.findByCinematographicContentTitleIdOrderByValorationSumDesc(titleId)
+        return repository.findByCinematographicContentTitleIdOrderByValorationDesc(titleId)
     }
 
 
@@ -52,6 +57,4 @@ class ReviewService{
 
     @Transactional
     fun findAll(): MutableIterable<Review> = repository.findAll()
-
-    private fun validateReview(review: Review) = review.validate()
 }

@@ -27,14 +27,14 @@ abstract class ReviewDTO {
                 PublicDTO(review.id,review.cinematographicContent!!.titleId,
                 review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
                     review.seasonNumber, review.episodeNumber, review.reviewType, review.valoration,
-                    review.usersWhoValued.map { ValorationDTO.fromModel(it) }, publicReview.includeSpoiler, publicReview.userId,
+                    publicReview.includeSpoiler, publicReview.userId,
                     publicReview.username, publicReview.geographicLocation)
             } else {
                 val premiumReview = review as Premium
                 PremiumDTO(review.id,review.cinematographicContent!!.titleId,
                     review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
-                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valoration, premiumReview.geographicLocation,
-                    review.usersWhoValued.map { ValorationDTO.fromModel(it) }, premiumReview.reviewerId)
+                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valoration,
+                    premiumReview.geographicLocation, premiumReview.reviewerId)
             }
         }
     }
@@ -61,8 +61,6 @@ class PublicDTO(
     val reviewType: ReviewType,
     @ApiModelProperty(hidden = true)
     val valoration: Int = 0,
-    @ApiModelProperty(hidden = true)
-    val usersWhoValued: List<ValorationDTO> = mutableListOf(),
     val includeSpoiler: Boolean = false,
     val userId: String,
     val username: String,
@@ -97,8 +95,6 @@ class PremiumDTO(
     @ApiModelProperty(hidden = true)
     val valoration: Int = 0,
     val geographicLocation: String,
-    @ApiModelProperty(hidden = true)
-    val usersWhoValued: List<ValorationDTO> = mutableListOf(),
     val reviewerId: String) : ReviewDTO() {
 
     override fun toModel(): Review {
