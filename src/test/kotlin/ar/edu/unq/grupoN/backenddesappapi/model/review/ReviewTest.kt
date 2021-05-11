@@ -81,52 +81,36 @@ class ReviewTest {
     }
 
     @Test
-    fun `a public new review recieve a like and now have a one like more`(){
-        val review = factory.aPublicReview()
-        review.rate(userId = "Nico", platform = "Netflix" ,valoration= Valoration.LIKE)
-
-        assertThat(review.amountOf(Valoration.LIKE)).isEqualTo(1)
-
-    }
-
-    @Test
-    fun `a public new review receive a dislike and now have a one dislike more`() {
-        val review = factory.aPublicReview()
-        review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
-
-        assertThat(review.amountOf(Valoration.DISLIKE)).isEqualTo(1)
-    }
-
-    @Test
     fun `a public new review receive two dislikes and now have less rating`() {
         val review = factory.aPublicReview()
-        val valorationBeforeReceiveValorations = review.valorationSum
+        val valorationBeforeReceiveValorations = review.valoration
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
         review.rate(userId = "Fede", platform = "Netflix",valoration= Valoration.DISLIKE)
 
         val valorationAfterReceiveValorations = valorationBeforeReceiveValorations - 2
-        assertThat(review.valorationSum).isEqualTo(valorationAfterReceiveValorations)
+        assertThat(review.valoration).isEqualTo(valorationAfterReceiveValorations)
     }
 
     @Test
     fun `a user from a platform who like two times a review count by one`() {
         val review = factory.aPublicReview()
-        val valorationBeforeReceiveValorations = review.valorationSum
+        val valorationBeforeReceiveValorations = review.valoration
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
 
         val valorationAfterReceiveValorations = valorationBeforeReceiveValorations + 1
-        assertThat(review.valorationSum).isEqualTo(valorationAfterReceiveValorations)
+        assertThat(review.valoration).isEqualTo(valorationAfterReceiveValorations)
     }
 
     @Test
-    fun `when a user from a platform who like and after dislike a review, review only has a dislike`() {
+    fun `when a user from a platform who like and after dislike a review, review have one valoration point less`() {
         val review = factory.aPublicReview()
+        val valorationBeforeReceiveValorations = review.valoration
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.LIKE)
         review.rate(userId = "Nico", platform = "Netflix",valoration= Valoration.DISLIKE)
 
-        assertThat(review.amountOf(Valoration.DISLIKE)).isEqualTo(1)
-        assertThat(review.amountOf(Valoration.LIKE)).isEqualTo(0)
+        val valorationAfterReceiveValorations = valorationBeforeReceiveValorations - 1
+        assertThat(review.valoration).isEqualTo(valorationAfterReceiveValorations)
     }
 
     @Test

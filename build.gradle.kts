@@ -64,4 +64,10 @@ tasks.jacocoTestReport {
 		csv.isEnabled = false
 		html.destination = layout.buildDirectory.dir("jacocoHtml").get().asFile
 	}
+
+	classDirectories.setFrom(
+		sourceSets.main.get().output.asFileTree.matching {
+			include("ar/edu/unq/grupoN/backenddesappapi/model/**")
+		}
+	)
 }

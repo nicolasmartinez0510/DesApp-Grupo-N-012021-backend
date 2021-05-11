@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository
 @Configuration
 interface ReviewRepository: CrudRepository<Review, Long?> {
 
-    fun findByCinematographicContentTitleIdOrderByValorationSumDesc(titleId: String) : List<Review>
+    fun findByCinematographicContentTitleIdOrderByValorationDesc(titleId: String) : List<Review>
 
 }
