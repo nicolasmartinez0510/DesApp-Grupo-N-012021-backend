@@ -67,16 +67,14 @@ class ReviewController {
         @ApiParam(value = "reviewId", example = "1", required = true)
         @PathVariable reviewId: Long,
         @RequestBody valorationDTO: ValorationDTO): ResponseEntity<*>? {
-        val review = try {
-            reviewService.findById(reviewId).get()
+        val review: ReviewDTO = try {
+            reviewService.rate(reviewId, valorationDTO)
         } catch (e: NoSuchElementException) {
 
             return ResponseEntity.badRequest().body(createExceptionResponse(e))
         }
-        review.rate(valorationDTO.userId, valorationDTO.platform, valorationDTO.valoration)
-        reviewService.update(review = review)
 
-        return ResponseEntity.ok().body(ReviewDTO.fromModel(review))
+        return ResponseEntity.ok().body(review)
 
     }
 
@@ -87,7 +85,7 @@ class ReviewController {
         @RequestParam
         titleId: String
     ): ResponseEntity<*>? {
-        val reviewsResult = reviewService.findReviewsBy(titleId).map { ReviewDTO.fromModel(it) }
+        val reviewsResult = reviewService.search(titleId)
 
         return ResponseEntity.ok().body(reviewsResult)
     }
@@ -95,9 +93,7 @@ class ReviewController {
     @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
     @RequestMapping(value = ["","/"], method = [RequestMethod.GET])
     fun reviews(): ResponseEntity<*>? {
-        val reviews = reviewService.findAll().map { review -> ReviewDTO.fromModel(review) }
-
-        return ResponseEntity.ok().body(reviews)
+        return ResponseEntity.ok().body(reviewService.findAll())
     }
 
     private fun createExceptionResponse(e: Exception): MutableMap<String, String> {
