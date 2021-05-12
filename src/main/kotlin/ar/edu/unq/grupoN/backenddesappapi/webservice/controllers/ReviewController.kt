@@ -2,6 +2,7 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.ApplicableFilters
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReportDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO

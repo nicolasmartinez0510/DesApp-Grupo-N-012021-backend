@@ -1,10 +1,14 @@
 package ar.edu.unq.grupoN.backenddesappapi.service
 
-import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.model.InvalidReviewTypeException
+import ar.edu.unq.grupoN.backenddesappapi.model.InvalidSeasonOrEpisodeNumberException
+import ar.edu.unq.grupoN.backenddesappapi.model.Report
+import ar.edu.unq.grupoN.backenddesappapi.model.ReviewType
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.ApplicableFilters
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReportDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO

@@ -11,3 +11,5 @@ class DoesNotExistChapterException(title: String) :
 
 class InvalidSeasonOrEpisodeNumberException :
     ReviewTypeException("Invalid season or episode number, in a chapter review, both must be a number")
+
+class AlreadyExistException(message: String) : RuntimeException(message)

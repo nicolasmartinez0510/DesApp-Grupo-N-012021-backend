@@ -60,18 +60,3 @@ class Report(
     fun isFromUser(userId: String, userPlatform: String) = this.userId == userId && this.userPlatform == userPlatform
 
 }
-
-data class ApplicableFilters(
-    val platform: String? = null,
-    val includeSpoiler: Boolean? = null,
-    val type: String? = null,
-    val language: String? = null,
-    val geographicLocation: String? = null,
-    val contentType: ReviewType? = null,
-    val seasonNumber: Int? = null,
-    val episodeNumber: Int? = null,
-    val orderByDate: Boolean = true,
-    val orderByRating: Boolean = true,
-    val order: String? = "DESC",
-    val page: Int = 0
-)
