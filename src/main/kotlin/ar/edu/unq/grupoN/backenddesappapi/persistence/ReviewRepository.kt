@@ -8,8 +8,4 @@ import org.springframework.stereotype.Repository
 
 @Repository
 @Configuration
-interface ReviewRepository: CrudRepository<Review, Long?> {
-
-    fun findByCinematographicContentTitleIdOrderByValorationDesc(titleId: String) : List<Review>
-
-}
+interface ReviewRepository: CrudRepository<Review, Long?>

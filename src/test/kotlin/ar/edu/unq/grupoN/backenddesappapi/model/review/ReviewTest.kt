@@ -56,7 +56,7 @@ class ReviewTest {
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.gladiatorMovie())
         assertThat(review.reviewType).isEqualTo(ReviewType.MOVIE)
-        assertThat(review.isPublic()).isTrue
+        assertThat(review.isPublic).isTrue
     }
 
     @Test
@@ -67,7 +67,7 @@ class ReviewTest {
             .isEqualTo(factory.spartacusSerie())
         assertThat(review.reviewType).isEqualTo(ReviewType.SERIE)
         assertThat(review.reviewerId).isEqualTo(reviewerId)
-        assertThat(review.isPublic()).isFalse
+        assertThat(review.isPublic).isFalse
     }
 
     @Test

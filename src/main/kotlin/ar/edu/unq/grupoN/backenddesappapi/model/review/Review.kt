@@ -26,6 +26,8 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     open var id: Long? = null
+    open val isPublic = false
+    open val includeSpoiler = false
 
     init {
         this.seasonNumber = contentInfo.seasonNumber
@@ -54,8 +56,6 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
 
         updateValoration()
     }
-
-    open fun isPublic() = false
 
     private fun createValoration(userId: String, platform: String, valoration: Valoration) =
         ValorationData(this, userId, platform, valoration)

@@ -1,6 +1,7 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
-import ar.edu.unq.grupoN.backenddesappapi.model.ReviewTypeException
+import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.service.ApplicableFilters
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO
@@ -81,11 +82,53 @@ class ReviewController {
     @ApiOperation( value = "Search reviews on a specific titleId content.")
     @RequestMapping(value = ["/search"], method = [RequestMethod.GET])
     fun getReviewsFrom(
-        @ApiParam(value = "titleId", example = "GladiatorID", required = true)
+        @ApiParam(value = "wanted content's titleId", example = "GladiatorID", required = true)
         @RequestParam
-        titleId: String
+        titleId: String,
+        @ApiParam(value = "review platform", example = "NETFLIX")
+        @RequestParam
+        platform: Platform? = null,
+        @ApiParam(value = "review has or not a spoiler", example = "false")
+        @RequestParam
+        includeSpoiler: Boolean? = null,
+        @ApiParam(value = "if you want publics, premiums or both review types", example = "PUBLIC")
+        @RequestParam
+        type: WantedReview?,
+        @ApiParam(value = "review language", example = "ENGLISH")
+        @RequestParam
+        language: Language?,
+        @ApiParam(value = "from where u want review from", example = "ARGENTINA")
+        @RequestParam
+        geographicLocation: Country?,
+        @ApiParam(value = "content review specific type", example = "MOVIE")
+        @RequestParam
+        contentType: ReviewType?,
+        @ApiParam(value = "only use if you want a specific chapter review")
+        @RequestParam
+        seasonNumber: Int?,
+        @RequestParam
+        @ApiParam(value = "only use if you want a specific chapter review")
+        episodeNumber: Int?,
+        @RequestParam
+        @ApiParam(value = "if you want who reviews ordered by rating, by default is true")
+        orderByDate: Boolean = true,
+        @RequestParam
+        @ApiParam(value = "if you want who reviews ordered by date, by default is true")
+        orderByRating: Boolean = true,
+        @RequestParam
+        @ApiParam(value = "the order type, by default is DESC")
+        order: Sort?,
+        @RequestParam
+        @ApiParam(value = "the required page, by default is the first page", example = "0")
+        page: Int
     ): ResponseEntity<*>? {
-        val reviewsResult = reviewService.search(titleId)
+        val applicableFilters =
+            ApplicableFilters(platform = platform?.toString(),
+                includeSpoiler,type = type?.toString(),
+                language = language?.toString(), geographicLocation = geographicLocation?.toString(),
+                contentType,seasonNumber,episodeNumber,orderByDate = orderByDate, orderByRating,
+                order = order?.toString(), page)
+        val reviewsResult = reviewService.search(titleId, applicableFilters)
 
         return ResponseEntity.ok().body(reviewsResult)
     }

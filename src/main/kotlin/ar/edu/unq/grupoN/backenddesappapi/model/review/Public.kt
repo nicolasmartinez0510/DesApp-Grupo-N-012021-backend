@@ -12,17 +12,8 @@ import javax.persistence.PrimaryKeyJoinColumn
 class Public(contentInfo: ContentInfo, reviewInfo: ReviewInfo, publicReviewInfo: PublicReviewInfo)
     : Review(contentInfo, reviewInfo) {
 
-    var includeSpoiler: Boolean = false
-    var userId: String
-    var username: String
-
-    init {
-        this.includeSpoiler = publicReviewInfo.includeSpoiler
-        this.username = publicReviewInfo.username
-        this.userId = publicReviewInfo.userId
-    }
-
-    override fun isPublic() = true
-
-
+    override var includeSpoiler = publicReviewInfo.includeSpoiler
+    var userId = publicReviewInfo.userId
+    var username = publicReviewInfo.username
+    override val isPublic = true
 }

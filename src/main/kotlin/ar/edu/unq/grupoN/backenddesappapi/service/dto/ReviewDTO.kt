@@ -22,7 +22,7 @@ abstract class ReviewDTO {
 
     companion object {
         fun fromModel(review: Review): ReviewDTO {
-            return if (review.isPublic()) {
+            return if (review.isPublic) {
                 val publicReview = review as Public
                 PublicDTO(review.id,review.cinematographicContent!!.titleId,
                 review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
