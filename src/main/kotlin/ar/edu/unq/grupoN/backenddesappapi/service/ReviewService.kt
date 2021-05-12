@@ -59,10 +59,6 @@ class ReviewService {
         return saveReview(review)
     }
 
-    //    Buscar reseñas de una película o serie usando el id de IMDB. Se debe poder filtrar por
-//    plataforma, spoiler alert, tipo (review o crítica), idioma y país. Además que se pueda
-//    ordenar por rating y/o fecha, y que el orden sea ascendente o descendente. Además,
-//    los resultados deben estar paginados
     @Transactional
     fun search(titleId: String, applicableFilters: ApplicableFilters): List<ReviewDTO> {
         val cb = em.criteriaBuilder
@@ -157,6 +153,8 @@ class ReviewService {
             predicates.add(geographicLocationPredicate)
         }
 
+        predicates.add(cb.lessThan(cb.size(review.get<MutableList<Report>>("reports")), 5))
+
         cq.where(*predicates.toTypedArray())
     }
 
@@ -186,6 +184,8 @@ class ReviewService {
                 orders.add(cb.asc(review.get<Int>("valoration")))
             }
         }
+
+        orders.add(cb.asc(cb.size(review.get<MutableList<Report>>("reports"))))
 
         cq.orderBy(*orders.toTypedArray())
     }

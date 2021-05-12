@@ -68,5 +68,5 @@ enum class Sort {
 }
 
 enum class ReportType {
-    OFFENSIVE, SPAM
+    OFFENSIVE, SPAM, UGLYWORDS, RACISM, XENOPHOBIA, SPOILER
 }

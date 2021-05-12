@@ -38,7 +38,7 @@ class ReviewController {
                 "\"includeSpoiler\":true,\n" +
                 "\"userId\":\"chesteroide1\",\n" +
                 "\"username\":\"chester.oide\",\n" +
-                "\"geographicLocation\":\"Argentina\"} }"
+                "\"geographicLocation\":\"ARGENTINA\"} }"
     )
     @ApiResponses(
         value = [
@@ -58,7 +58,7 @@ class ReviewController {
 
     @ApiOperation(
         value = "Rate a review. If the same user from the same platform rate a review more than one time," +
-                "his valoration was the last who he/she sent."
+                "his/him valoration was the last who he/she sent."
     )
     @ApiResponses(
         value = [
@@ -83,7 +83,10 @@ class ReviewController {
     }
 
     @RequestMapping(value = ["report/{reviewId}"], method = [RequestMethod.POST])
-    fun report(
+    @ApiOperation(
+        value = "Report a review. If the same user from the same platform rate a review more than one time," +
+                "his/him report was the last who he/she sent."
+    )    fun report(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
         @RequestBody reportDTO: ReportDTO
