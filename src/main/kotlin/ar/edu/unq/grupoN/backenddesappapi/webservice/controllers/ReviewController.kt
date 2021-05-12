@@ -1,8 +1,8 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.model.*
-import ar.edu.unq.grupoN.backenddesappapi.service.ApplicableFilters
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReportDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO
 import io.swagger.annotations.*
@@ -47,17 +47,19 @@ class ReviewController {
     )
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
-        val review : ReviewDTO = try {
+        val review: ReviewDTO = try {
             reviewService.saveReview(createReviewRequest)
         } catch (e: ReviewTypeException) {
             return ResponseEntity.badRequest().body(createExceptionResponse(e))
         }
 
-        return ResponseEntity.ok().body(review)
+        return ResponseEntity.ok(review)
     }
 
-    @ApiOperation( value = "Rate a review. If the same user from the same platform rate a review more than one time," +
-            "his valoration was the last who he/she sent.")
+    @ApiOperation(
+        value = "Rate a review. If the same user from the same platform rate a review more than one time," +
+                "his valoration was the last who he/she sent."
+    )
     @ApiResponses(
         value = [
             ApiResponse(code = 200, message = "Review rated succesfully"),
@@ -65,9 +67,10 @@ class ReviewController {
     )
     @RequestMapping(value = ["/rate/{reviewId}"], method = [RequestMethod.POST])
     fun rate(
-        @ApiParam(value = "reviewId", example = "1", required = true)
+        @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
-        @RequestBody valorationDTO: ValorationDTO): ResponseEntity<*>? {
+        @RequestBody valorationDTO: ValorationDTO
+    ): ResponseEntity<*>? {
         val review: ReviewDTO = try {
             reviewService.rate(reviewId, valorationDTO)
         } catch (e: NoSuchElementException) {
@@ -75,11 +78,28 @@ class ReviewController {
             return ResponseEntity.badRequest().body(createExceptionResponse(e))
         }
 
-        return ResponseEntity.ok().body(review)
+        return ResponseEntity.ok(review)
 
     }
 
-    @ApiOperation( value = "Search reviews on a specific titleId content.")
+    @RequestMapping(value = ["report/{reviewId}"], method = [RequestMethod.POST])
+    fun report(
+        @ApiParam(value = "id of review who you want to report", example = "1", required = true)
+        @PathVariable reviewId: Long,
+        @RequestBody reportDTO: ReportDTO
+    ): ResponseEntity<*>? {
+        val review: ReviewDTO = try {
+            reviewService.report(reviewId, reportDTO)
+        } catch (e: Exception) {
+
+            return ResponseEntity.badRequest().body(createExceptionResponse(e))
+        }
+
+        return ResponseEntity.ok(review)
+
+    }
+
+    @ApiOperation(value = "Search reviews on a specific titleId content.")
     @RequestMapping(value = ["/search"], method = [RequestMethod.GET])
     fun getReviewsFrom(
         @ApiParam(value = "wanted content's titleId", example = "GladiatorID", required = true)
@@ -123,18 +143,20 @@ class ReviewController {
         page: Int
     ): ResponseEntity<*>? {
         val applicableFilters =
-            ApplicableFilters(platform = platform?.toString(),
-                includeSpoiler,type = type?.toString(),
+            ApplicableFilters(
+                platform = platform?.toString(),
+                includeSpoiler, type = type?.toString(),
                 language = language?.toString(), geographicLocation = geographicLocation?.toString(),
-                contentType,seasonNumber,episodeNumber,orderByDate = orderByDate, orderByRating,
-                order = order?.toString(), page)
+                contentType, seasonNumber, episodeNumber, orderByDate = orderByDate, orderByRating,
+                order = order?.toString(), page
+            )
         val reviewsResult = reviewService.search(titleId, applicableFilters)
 
-        return ResponseEntity.ok().body(reviewsResult)
+        return ResponseEntity.ok(reviewsResult)
     }
 
     @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
-    @RequestMapping(value = ["","/"], method = [RequestMethod.GET])
+    @RequestMapping(value = ["", "/"], method = [RequestMethod.GET])
     fun reviews(): ResponseEntity<*>? {
         return ResponseEntity.ok().body(reviewService.findAll())
     }
@@ -151,4 +173,5 @@ class ReviewController {
 
 data class CreateReviewRequest(
     @ApiModelProperty(value = "titleId", example = "GladiatorID", required = true)
-    val titleId: String, val reviewToCreate: ReviewDTO)
+    val titleId: String, val reviewToCreate: ReviewDTO
+)

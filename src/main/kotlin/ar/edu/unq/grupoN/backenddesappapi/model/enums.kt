@@ -66,3 +66,7 @@ enum class Country {
 enum class Sort {
     ASC, DESC
 }
+
+enum class ReportType {
+    OFFENSIVE, SPAM
+}

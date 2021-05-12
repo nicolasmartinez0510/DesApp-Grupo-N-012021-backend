@@ -5,20 +5,17 @@ import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReportDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO
 import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
-import io.swagger.annotations.ApiModelProperty
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDateTime
 import javax.persistence.EntityManager
 import javax.persistence.TypedQuery
-import javax.persistence.criteria.CriteriaQuery
-import javax.persistence.criteria.Order
-import javax.persistence.criteria.Predicate
-import javax.persistence.criteria.Root
+import javax.persistence.criteria.*
 
 
 @Service
@@ -36,13 +33,12 @@ class ReviewService {
     @Transactional
     fun saveReview(createReviewRequest: CreateReviewRequest): ReviewDTO {
         val content = contentRepository.findById(createReviewRequest.titleId).get()
-        var review = createReviewRequest.reviewToCreate.toModel()
+        val review = createReviewRequest.reviewToCreate.toModel()
         review.cinematographicContent = content
 
         review.validate()
-        review = repository.save(review)
 
-        return ReviewDTO.fromModel(review)
+        return saveReview(review)
     }
 
     @Transactional
@@ -51,7 +47,16 @@ class ReviewService {
 
         review.rate(valorationDTO.userId, valorationDTO.platform, valorationDTO.valoration)
 
-        return ReviewDTO.fromModel(repository.save(review))
+        return saveReview(review)
+    }
+
+    @Transactional
+    fun report(reviewId: Long, reportDTO: ReportDTO): ReviewDTO {
+        val review: Review = repository.findById(reviewId).get()
+
+        review.report(reportDTO.userId, reportDTO.platform, reportDTO.reportType)
+
+        return saveReview(review)
     }
 
     //    Buscar reseñas de una película o serie usando el id de IMDB. Se debe poder filtrar por
@@ -62,9 +67,33 @@ class ReviewService {
     fun search(titleId: String, applicableFilters: ApplicableFilters): List<ReviewDTO> {
         val cb = em.criteriaBuilder
         val cq: CriteriaQuery<Review> = cb.createQuery(Review::class.java)
+        val review: Root<Review> = cq.from(Review::class.java)
+
+        generateFilters(titleId, applicableFilters, cb, review, cq)
+        generateOrders(applicableFilters, cb, review, cq)
+
+        val query: TypedQuery<Review> = generateQuery(cq, applicableFilters)
+
+        return query.resultList.map { ReviewDTO.fromModel(it) }
+    }
+
+    @Transactional
+    fun addFakeReview(review: Review) {
+        repository.save(review)
+    }
+
+    @Transactional
+    fun findAll(): List<ReviewDTO> = repository.findAll().map { ReviewDTO.fromModel(it) }
+
+    private fun generateFilters(
+        titleId: String,
+        applicableFilters: ApplicableFilters,
+        cb: CriteriaBuilder,
+        review: Root<Review>,
+        cq: CriteriaQuery<Review>
+    ) {
         val predicates: MutableList<Predicate> = ArrayList()
 
-        val review: Root<Review> = cq.from(Review::class.java)
         val content = contentRepository.findById(titleId).get()
 
         //filtering review's content type
@@ -129,8 +158,14 @@ class ReviewService {
         }
 
         cq.where(*predicates.toTypedArray())
+    }
 
-
+    private fun generateOrders(
+        applicableFilters: ApplicableFilters,
+        cb: CriteriaBuilder,
+        review: Root<Review>,
+        cq: CriteriaQuery<Review>
+    ) {
         val orders: MutableList<Order> = ArrayList()
 
 
@@ -153,23 +188,18 @@ class ReviewService {
         }
 
         cq.orderBy(*orders.toTypedArray())
+    }
 
+    private fun generateQuery(
+        cq: CriteriaQuery<Review>,
+        applicableFilters: ApplicableFilters
+    ): TypedQuery<Review> {
         val query: TypedQuery<Review> = em.createQuery(cq)
-
         val pageSize = 5
         query.firstResult = pageSize * applicableFilters.page
         query.maxResults = pageSize
-
-        return query.resultList.map { ReviewDTO.fromModel(it) }
+        return query
     }
-
-    @Transactional
-    fun addFakeReview(review: Review) {
-        repository.save(review)
-    }
-
-    @Transactional
-    fun findAll(): List<ReviewDTO> = repository.findAll().map { ReviewDTO.fromModel(it) }
 
     private fun validateContentType(content: CinematographicContent, contentType: ReviewType) {
         if (!content.isSerie() && (contentType == ReviewType.SERIE || contentType == ReviewType.CHAPTER))
@@ -178,23 +208,6 @@ class ReviewService {
         if (content.isSerie() && contentType == ReviewType.MOVIE)
             throw  InvalidReviewTypeException("Invalid review type, '${content.title}' is a Serie")
     }
-}
 
-//    Buscar reseñas de una película o serie usando el id de IMDB. Se debe poder filtrar por
-//    plataforma, spoiler alert, tipo (review o crítica), idioma y país. Además que se pueda
-//    ordenar por rating y/o fecha, y que el orden sea ascendente o descendente. Además,
-//    los resultados deben estar paginados
-data class ApplicableFilters(
-    val platform: String? = null,
-    val includeSpoiler: Boolean? = null,
-    val type: String? = null,
-    val language: String? = null,
-    val geographicLocation: String? = null,
-    val contentType: ReviewType? = null,
-    val seasonNumber: Int? = null,
-    val episodeNumber: Int? = null,
-    val orderByDate: Boolean = true,
-    val orderByRating: Boolean = true,
-    val order: String? = "DESC",
-    val page: Int = 0
-)
+    private fun saveReview(review: Review) = ReviewDTO.fromModel(repository.save(review))
+}

@@ -67,7 +67,7 @@ class ReviewTest {
             .isEqualTo(factory.spartacusSerie())
         assertThat(review.reviewType).isEqualTo(ReviewType.SERIE)
         assertThat(review.reviewerId).isEqualTo(reviewerId)
-        assertThat(review.isPublic).isFalse
+        assertThat(review.isPublic  ).isFalse
     }
 
     @Test
@@ -154,6 +154,26 @@ class ReviewTest {
         assertThat("Invalid season or episode number, in a chapter review, both must be a number").isEqualTo(exception.message)
     }
 
+    @Test
+    fun `can reported an offensive review`(){
+        val review = factory.aPublicReview()
+
+        review.report("Chester", "NETFLIX", ReportType.OFFENSIVE)
+
+        assertThat(review.reports.size).isEqualTo(1)
+        assertThat(review.reports[0].reportType).isEqualTo(ReportType.OFFENSIVE)
+    }
+
+    @Test
+    fun `a user who report a review two times the last report only have effect`(){
+        val review = factory.aPublicReview()
+
+        review.report("Chester", "NETFLIX", ReportType.OFFENSIVE)
+        review.report("Chester", "NETFLIX", ReportType.SPAM)
+
+        assertThat(review.reports.size).isEqualTo(1)
+        assertThat(review.reports[0].reportType).isEqualTo(ReportType.SPAM)
+    }
 
     private val resumeText = "Lorem Ipsum has been the industry's standard dummy"
     private val text = "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."

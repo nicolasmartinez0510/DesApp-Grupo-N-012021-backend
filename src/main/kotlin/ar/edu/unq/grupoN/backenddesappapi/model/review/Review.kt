@@ -10,6 +10,7 @@ import javax.persistence.*
 abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     @ManyToOne(fetch = FetchType.EAGER)
     open var cinematographicContent: CinematographicContent? = contentInfo.cinematographicContent
+
     open var platform: String = contentInfo.platform
     open lateinit var reviewType: ReviewType
     open var seasonNumber: Int? = null
@@ -21,8 +22,10 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     open lateinit var language : String
     open var valoration: Int = 0
     open lateinit var geographicLocation: String
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     open var usersWhoValued: MutableSet<ValorationData> = mutableSetOf()
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    open val reports: MutableList<Report> = mutableListOf()
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     open var id: Long? = null
@@ -43,9 +46,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     }
 
     fun rate(userId:String, platform:String, valoration: Valoration){
-        val existingValoration: ValorationData? = usersWhoValued.firstOrNull {
-                aValoration -> aValoration.isFromUser(userId, platform)
-        }
+        val existingValoration = usersWhoValued.firstOrNull { it.isFromUser(userId, platform) }
 
         if (existingValoration == null) {
             val newValoration = createValoration(userId, platform, valoration)
@@ -55,6 +56,16 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         }
 
         updateValoration()
+    }
+
+    fun report(userId: String, userPlatform: String, reportType: ReportType) {
+        val existingReport = reports.firstOrNull { it.isFromUser(userId, userPlatform) }
+            if ( existingReport == null ) {
+                val newReport = Report(userId, userPlatform, reportType)
+                reports.add(newReport)
+            } else {
+                existingReport.reportType = reportType
+            }
     }
 
     private fun createValoration(userId: String, platform: String, valoration: Valoration) =
