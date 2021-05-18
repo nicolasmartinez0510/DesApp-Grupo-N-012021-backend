@@ -18,7 +18,7 @@ class PlatformAdminController {
     @Autowired
     private lateinit var platformAdminService: PlatformAdminService
 
-    @RequestMapping(value = ["register"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/register"], method = [RequestMethod.POST])
     fun register(@RequestBody adminPlatformInfo: AdminPlatformInfo): ResponseEntity<*>?{
         return try {
             ResponseEntity.ok(platformAdminService.register(adminPlatformInfo))
@@ -27,20 +27,12 @@ class PlatformAdminController {
         }
     }
 
-    @RequestMapping(value = ["login"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/login"], method = [RequestMethod.POST])
     fun login(@RequestBody adminCredentials: AdminCredentials): ResponseEntity<*>?{
         return try {
             ResponseEntity.ok(platformAdminService.login(adminCredentials))
         } catch (e: RuntimeException) {
             ResponseEntity.badRequest().body(createExceptionResponse(e))
         }
-    }
-
-    private fun createExceptionResponse(e: Exception): MutableMap<String, String> {
-        val exceptionResponse = mutableMapOf<String, String>()
-        exceptionResponse["error"] = e::class.simpleName.toString()
-        exceptionResponse["message"] = e.message.toString()
-
-        return exceptionResponse
     }
 }

@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 @Configuration
-interface ReviewRepository: CrudRepository<Review, Long?>
+interface ReviewRepository: CrudRepository<Review, Long?> {
+}

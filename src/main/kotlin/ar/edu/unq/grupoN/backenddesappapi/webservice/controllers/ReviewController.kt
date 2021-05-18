@@ -83,7 +83,7 @@ class ReviewController {
 
     }
 
-    @RequestMapping(value = ["report/{reviewId}"], method = [RequestMethod.POST])
+    @RequestMapping(value = ["/report/{reviewId}"], method = [RequestMethod.POST])
     @ApiOperation(
         value = "Report a review. If the same user from the same platform rate a review more than one time," +
                 "his/him report was the last who he/she sent."
@@ -165,14 +165,19 @@ class ReviewController {
         return ResponseEntity.ok().body(reviewService.findAll())
     }
 
-    private fun createExceptionResponse(e: Exception): MutableMap<String, String> {
-        val exceptionResponse = mutableMapOf<String, String>()
-        exceptionResponse["error"] = e::class.simpleName.toString()
-        exceptionResponse["message"] = e.message.toString()
-
-        return exceptionResponse
+    @ApiOperation(value = "reverse search")
+    @RequestMapping(value = ["/mycontent"], method = [RequestMethod.GET])
+    fun searchContent(): ResponseEntity<*>? {
+        return ResponseEntity.ok().body(reviewService.findContentBy())
     }
+}
 
+fun createExceptionResponse(e: Exception): MutableMap<String, String> {
+    val exceptionResponse = mutableMapOf<String, String>()
+    exceptionResponse["error"] = e::class.simpleName.toString()
+    exceptionResponse["message"] = e.message.toString()
+
+    return exceptionResponse
 }
 
 data class CreateReviewRequest(

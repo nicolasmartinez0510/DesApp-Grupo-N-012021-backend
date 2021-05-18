@@ -190,10 +190,12 @@ class FakeDataConfiguration {
         cinematographicContentService: CinematographicContentService,
         reviewService: ReviewService
     ) {
+        val cast = getCastMembers(faker.number().numberBetween(5, 8))
+        cast.add(CastMember("Chestersaurio",Employment.ACTOR,"NOTHING","Pepe",1999,null))
         val gladiatorMovie =
             Movie(
                 basicInformation = getBasicInformation(),
-                cast = getCastMembers(faker.number().numberBetween(5, 8)),
+                cast = cast,
                 rating = getRatingInfo()
             )
 
