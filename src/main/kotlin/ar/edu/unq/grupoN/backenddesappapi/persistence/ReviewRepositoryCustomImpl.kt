@@ -227,21 +227,7 @@ class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
     ) {
         if (reverseSearchFilter.searchedCastMember != null) {
             if (reverseSearchFilter.jobInContent != null) {
-                if (reverseSearchFilter.jobInContent == Employment.ACTOR) {
-                    addEqual(predicates, cb, joinReviewContentCast.get("employment"), Employment.ACTOR)
-//                    val castType = cb.equal(joinReviewContentCast.get<Employment>("employment"), Employment.ACTOR)
-//                    predicates.add(castType)
-                }
-                if (reverseSearchFilter.jobInContent == Employment.DIRECTOR) {
-                    addEqual(predicates, cb, joinReviewContentCast.get("employment"), Employment.DIRECTOR)
-//                    val castType = cb.equal(joinReviewContentCast.get<Employment>("employment"), Employment.DIRECTOR)
-//                    predicates.add(castType)
-                }
-                if (reverseSearchFilter.jobInContent == Employment.WRITER) {
-                    addEqual(predicates, cb, joinReviewContentCast.get("employment"), Employment.WRITER)
-//                    val castType = cb.equal(joinReviewContentCast.get<Employment>("employment"), Employment.WRITER)
-//                    predicates.add(castType)
-                }
+                addEqual(predicates, cb, joinReviewContentCast.get("employment"), reverseSearchFilter.jobInContent)
             }
 
             val actorPredicate = cb.like(
