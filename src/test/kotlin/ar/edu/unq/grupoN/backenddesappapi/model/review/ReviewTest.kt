@@ -13,7 +13,7 @@ class ReviewTest {
 
     @Test
     fun `a new public review on a serie episode`(){
-        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+        val review = factory.publicReviewOn(factory.spartacusSerie(), 4.0, ReviewType.CHAPTER,2,6)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.spartacusSerie())
@@ -21,7 +21,7 @@ class ReviewTest {
         assertThat(review.seasonNumber).isEqualTo(2)
         assertThat(review.resumeText).isEqualTo(resumeText)
         assertThat(review.text).isEqualTo(text)
-        assertThat(review.rating).isEqualTo(Rating.FOUR)
+        assertThat(review.rating).isEqualTo(4.0)
         assertThat(review.includeSpoiler).isTrue
         assertThat(review.date).isEqualTo(date)
         assertThat(review.platform).isEqualTo(platform)
@@ -34,8 +34,8 @@ class ReviewTest {
 
     @Test
     fun `a public review set public review info`(){
-        val oldReview = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
-        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+        val oldReview = factory.publicReviewOn(factory.spartacusSerie(), 4.0, ReviewType.CHAPTER,2,6)
+        val review = factory.publicReviewOn(factory.spartacusSerie(), 4.0, ReviewType.CHAPTER,2,6)
 
         review.geographicLocation = "Guadalajara"
         review.language = "Spanish"
@@ -51,7 +51,7 @@ class ReviewTest {
     }
     @Test
     fun `a new public review on a movie`(){
-        val review = factory.publicReviewOn(factory.gladiatorMovie(), Rating.THREE, ReviewType.MOVIE)
+        val review = factory.publicReviewOn(factory.gladiatorMovie(), 3.0, ReviewType.MOVIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.gladiatorMovie())
@@ -61,7 +61,7 @@ class ReviewTest {
 
     @Test
     fun `a new premium review on a serie know his data and who is not a public review`(){
-        val review = factory.premiumReviewOn(factory.spartacusSerie(), Rating.ONE, ReviewType.SERIE)
+        val review = factory.premiumReviewOn(factory.spartacusSerie(), 1.5, ReviewType.SERIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.spartacusSerie())
@@ -72,7 +72,7 @@ class ReviewTest {
 
     @Test
     fun `a new premium review on a movie`(){
-        val review = factory.premiumReviewOn(factory.gladiatorMovie(), Rating.FIVE, ReviewType.MOVIE)
+        val review = factory.premiumReviewOn(factory.gladiatorMovie(), 5.0, ReviewType.MOVIE)
 
         assertThat(review.cinematographicContent).usingRecursiveComparison()
             .isEqualTo(factory.gladiatorMovie())
@@ -115,7 +115,7 @@ class ReviewTest {
 
     @Test
     fun `throws an exception when validate a review with movie type, but his content is a serie`(){
-        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.MOVIE)
+        val review = factory.publicReviewOn(factory.spartacusSerie(), 4.0, ReviewType.MOVIE)
 
         val exception = assertThrows<RuntimeException> { review.validate() }
         assertThat("Invalid review type, 'Spartacus' is a Serie").isEqualTo(exception.message)
@@ -124,7 +124,7 @@ class ReviewTest {
 
     @Test
     fun `throws an exception when validate a review with serie type, but his content is a movie`(){
-        val review = factory.publicReviewOn(factory.gladiatorMovie(), Rating.FOUR, ReviewType.SERIE)
+        val review = factory.publicReviewOn(factory.gladiatorMovie(), 4.0, ReviewType.SERIE)
 
         val exception = assertThrows<InvalidReviewTypeException> { review.validate() }
         assertThat("Invalid review type, 'Gladiator' is a Movie").isEqualTo(exception.message)
@@ -132,7 +132,7 @@ class ReviewTest {
 
     @Test
     fun `throws an exception when validate a review with chapter type, but his content is a movie`(){
-        val review = factory.publicReviewOn(factory.gladiatorMovie(), Rating.FOUR, ReviewType.CHAPTER)
+        val review = factory.publicReviewOn(factory.gladiatorMovie(), 4.0, ReviewType.CHAPTER)
 
         val exception = assertThrows<InvalidReviewTypeException> { review.validate() }
         assertThat("Invalid review type, 'Gladiator' is a Movie").isEqualTo(exception.message)
@@ -140,7 +140,7 @@ class ReviewTest {
 
     @Test
     fun `throws an exception when validate a review with chapter type, but episode doesn't exist`(){
-        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER,2,6)
+        val review = factory.publicReviewOn(factory.spartacusSerie(), 4.0, ReviewType.CHAPTER,2,6)
 
         val exception = assertThrows<DoesNotExistChapterException> { review.validate() }
         assertThat("This chapter doesn't exist in 'Spartacus' yet").isEqualTo(exception.message)
@@ -148,7 +148,7 @@ class ReviewTest {
 
     @Test
     fun `throws an exception when validate a review with chapter type, but episode or season number is null`(){
-        val review = factory.publicReviewOn(factory.spartacusSerie(), Rating.FOUR, ReviewType.CHAPTER)
+        val review = factory.publicReviewOn(factory.spartacusSerie(), 4.0, ReviewType.CHAPTER)
 
         val exception = assertThrows<InvalidSeasonOrEpisodeNumberException> { review.validate() }
         assertThat("Invalid season or episode number, in a chapter review, both must be a number").isEqualTo(exception.message)
@@ -173,6 +173,22 @@ class ReviewTest {
 
         assertThat(review.reports.size).isEqualTo(1)
         assertThat(review.reports[0].reportType).isEqualTo(ReportType.SPAM)
+    }
+
+    @Test
+    fun `cannot create a review with a rating above five`(){
+
+        val exception = assertThrows<InvalidReviewRatingException> { factory.publicReviewOn(factory.spartacusSerie(),5.15, ReviewType.SERIE) }
+
+        assertThat(exception.message).isEqualTo("Invalid review rating")
+    }
+
+    @Test
+    fun `cannot create a review with a rating below zero`(){
+
+        val exception = assertThrows<InvalidReviewRatingException> { factory.publicReviewOn(factory.spartacusSerie(),-1.0, ReviewType.SERIE) }
+
+        assertThat(exception.message).isEqualTo("Invalid review rating")
     }
 
     private val resumeText = "Lorem Ipsum has been the industry's standard dummy"

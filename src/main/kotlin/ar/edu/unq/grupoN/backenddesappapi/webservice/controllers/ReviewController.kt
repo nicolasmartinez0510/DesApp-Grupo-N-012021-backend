@@ -2,10 +2,7 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
-import ar.edu.unq.grupoN.backenddesappapi.service.dto.ApplicableFilters
-import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReportDTO
-import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
-import ar.edu.unq.grupoN.backenddesappapi.service.dto.ValorationDTO
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -33,7 +30,7 @@ class ReviewController {
                 "\"language\":\"ENGLISH\",\n" +
                 "\"resumeText\":\"I love this movie.\",\n" +
                 "\"text\":\"Is the best in the world, the true masterpiece!!\",\n" +
-                "\"rating\":\"FIVE\",\n" +
+                "\"rating\": 5.0,\n" +
                 "\"date\":\"2016-05-23T14:43:39.354\",\n" +
                 "\"reviewType\":\"MOVIE\",\n" +
                 "\"includeSpoiler\":true,\n" +
@@ -87,7 +84,8 @@ class ReviewController {
     @ApiOperation(
         value = "Report a review. If the same user from the same platform rate a review more than one time," +
                 "his/him report was the last who he/she sent."
-    )    fun report(
+    )
+    fun report(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
         @RequestBody reportDTO: ReportDTO
@@ -166,9 +164,34 @@ class ReviewController {
     }
 
     @ApiOperation(value = "reverse search")
-    @RequestMapping(value = ["/mycontent"], method = [RequestMethod.GET])
-    fun searchContent(): ResponseEntity<*>? {
-        return ResponseEntity.ok().body(reviewService.findContentBy())
+    @RequestMapping(value = ["/searchContent"], method = [RequestMethod.GET])
+    fun searchContent(
+        @RequestParam
+        @ApiParam(value = "Select a rating required in a review")
+        reviewRating: Double?,
+        @RequestParam
+        @ApiParam(value = "If you want well or badly valued reviews")
+        wellValued: Boolean?,
+        @RequestParam
+        @ApiParam(value = "A desired genre content")
+        genre: String?,
+        @RequestParam
+        @ApiParam(value = "A wanted decade. It must be equal or greather than 1900")
+        decade: Int?,
+        @RequestParam
+        @ApiParam(value = "If the desired content if for adults")
+        isAdultContent: Boolean?,
+        @RequestParam
+        @ApiParam(value = "A desired cast member in a content")
+        searchCastMember: String?,
+        @RequestParam
+        @ApiParam(value = "A desired job in a content, by default, we search only the cast member. If you don't insert a cast member, this filter is obsolete")
+        jobInContent: Employment?,
+    ): ResponseEntity<*>? {
+        val reverseSearchFilter = ReverseSearchFilter(
+            reviewRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
+        )
+        return ResponseEntity.ok().body(reviewService.findContentBy(reverseSearchFilter))
     }
 }
 

@@ -52,7 +52,7 @@ class PublicDTO(
     val language: String,
     val resumeText: String,
     val text: String,
-    val rating: Rating,
+    val rating: Double,
     val date: LocalDateTime,
     @ApiModelProperty(value = "This field is only used when you want to add a review on a specific chapter in a Serie.")
     val seasonNumber: Int? = null,
@@ -87,7 +87,7 @@ class PremiumDTO(
     val language: String,
     val resumeText: String,
     val text: String,
-    val rating: Rating,
+    val rating: Double,
     val date: LocalDateTime,
     @ApiModelProperty(value = "This field is only used when you want to add a review on a specific chapter in a Serie.")
     val seasonNumber: Int? = null,

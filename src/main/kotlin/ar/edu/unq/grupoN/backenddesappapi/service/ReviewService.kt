@@ -53,8 +53,8 @@ class ReviewService {
     }
 
     @Transactional
-    fun findContentBy(): List<CinematographicContentDTO> {
-        return customReviewRepository.findContentInReverseSearch()
+    fun findContentBy(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContentDTO> {
+        return customReviewRepository.findContentInReverseSearch(reverseSearchFilter)
             .map { CinematographicContentDTO.fromModel(it) }
     }
 

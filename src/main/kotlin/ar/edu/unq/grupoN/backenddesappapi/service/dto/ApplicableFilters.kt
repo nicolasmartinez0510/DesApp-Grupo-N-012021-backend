@@ -1,5 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.service.dto
 
+import ar.edu.unq.grupoN.backenddesappapi.model.Employment
 import ar.edu.unq.grupoN.backenddesappapi.model.ReviewType
 
 data class ApplicableFilters(
@@ -15,4 +16,14 @@ data class ApplicableFilters(
     val orderByRating: Boolean = true,
     val order: String? = "DESC",
     val page: Int = 0
+)
+
+data class ReverseSearchFilter(
+    val reviewRating: Double? = null,
+    val wellValued: Boolean? = null,
+    val genre: String? = null,
+    val decade: Int? = null,
+    val isAdultContent: Boolean? = null,
+    val searchedCastMember: String? = null,
+    val jobInContent: Employment?=null,
 )

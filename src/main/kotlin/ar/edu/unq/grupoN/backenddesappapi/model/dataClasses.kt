@@ -19,7 +19,7 @@ data class ContentInfo(
 )
 
 data class ReviewInfo(
-    val resumeText: String, val text: String, val rating: Rating, val date: LocalDateTime,
+    val resumeText: String, val text: String, val rating: Double, val date: LocalDateTime,
     val reviewType: ReviewType, val language: String, val geographicLocation: String
 )
 

@@ -1,13 +1,11 @@
 package ar.edu.unq.grupoN.backenddesappapi.persistence
 
-import ar.edu.unq.grupoN.backenddesappapi.model.InvalidReviewTypeException
-import ar.edu.unq.grupoN.backenddesappapi.model.InvalidSeasonOrEpisodeNumberException
-import ar.edu.unq.grupoN.backenddesappapi.model.Report
-import ar.edu.unq.grupoN.backenddesappapi.model.ReviewType
+import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CastMember
 import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ApplicableFilters
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReverseSearchFilter
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
 import org.springframework.stereotype.Repository
@@ -19,12 +17,12 @@ import javax.persistence.criteria.*
 
 @Repository
 @Configuration
-class ReviewRepositoryCustomImpl: ReviewRepositoryCustom {
+class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
 
     @Autowired
     private lateinit var em: EntityManager
 
-    override fun findReviews(content:CinematographicContent, applicableFilters: ApplicableFilters) : List<Review> {
+    override fun findReviews(content: CinematographicContent, applicableFilters: ApplicableFilters): List<Review> {
         val cb = em.criteriaBuilder
         val cq: CriteriaQuery<Review> = cb.createQuery(Review::class.java)
         val review: Root<Review> = cq.from(Review::class.java)
@@ -38,20 +36,88 @@ class ReviewRepositoryCustomImpl: ReviewRepositoryCustom {
 
     }
 
-    override fun findContentInReverseSearch(): List<CinematographicContent> {
+    override fun findContentInReverseSearch(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContent> {
         val cb = em.criteriaBuilder
         val cq: CriteriaQuery<CinematographicContent> = cb.createQuery(CinematographicContent::class.java)
         val review: Root<Review> = cq.from(Review::class.java)
-        val join: Join<Review, CinematographicContent> = review.join("cinematographicContent")
-        val joinb: Join<Join<Review,CinematographicContent>, CastMember> = join.join("cast")
+        val reviewAndContent: Join<Review, CinematographicContent> = review.join("cinematographicContent")
+        val joinReviewContentCast: Join<Join<Review, CinematographicContent>, CastMember> =
+            reviewAndContent.join("cast")
 
-        cq.where(
-            cb.like(cb.upper(joinb.get("name")),"%rsAurio%".toUpperCase())
-        )
+        val predicates: MutableList<Predicate> = ArrayList()
 
+        if (reverseSearchFilter.reviewRating != null) {
+            val predicate = cb.greaterThanOrEqualTo(review.get("rating"), reverseSearchFilter.reviewRating)
+            predicates.add(predicate)
+        }
+
+        if (reverseSearchFilter.wellValued != null) {
+            if (reverseSearchFilter.wellValued) {
+                val predicate = cb.greaterThanOrEqualTo(review.get("valoration"), 5)
+                predicates.add(predicate)
+            } else {
+                val predicate = cb.lessThan(review.get("valoration"), 0)
+                predicates.add(predicate)
+            }
+        }
+
+        if (reverseSearchFilter.genre != null) {
+            val predicate =
+                cb.equal(cb.upper(reviewAndContent.get("titleType")), reverseSearchFilter.genre.toUpperCase())
+            predicates.add(predicate)
+        }
+
+        if (reverseSearchFilter.decade != null) {
+            if (reverseSearchFilter.decade < 1900) throw RuntimeException("Invalid year decade. Insert a value equals or greather than 1900.")
+
+            val predicateStartDecade =
+                cb.greaterThanOrEqualTo(reviewAndContent.get("startYear"), reverseSearchFilter.decade)
+            val predicateEndDecade =
+                cb.lessThanOrEqualTo(reviewAndContent.get("startYear"), reverseSearchFilter.decade + 10)
+
+            predicates.add(predicateStartDecade)
+            predicates.add(predicateEndDecade)
+        }
+
+        if (reverseSearchFilter.isAdultContent != null) {
+            if (reverseSearchFilter.isAdultContent) {
+                val predicate = cb.equal(reviewAndContent.get<Boolean>("isAdultContent"), true)
+                predicates.add(predicate)
+            } else {
+                val predicate = cb.equal(reviewAndContent.get<Boolean>("isAdultContent"), false)
+                predicates.add(predicate)
+            }
+        }
+
+        if (reverseSearchFilter.searchedCastMember != null) {
+            if (reverseSearchFilter.jobInContent != null) {
+                if (reverseSearchFilter.jobInContent == Employment.ACTOR) {
+                    val castType = cb.equal(joinReviewContentCast.get<Employment>("employment"), Employment.ACTOR)
+                    predicates.add(castType)
+                }
+                if (reverseSearchFilter.jobInContent == Employment.DIRECTOR) {
+                    val castType = cb.equal(joinReviewContentCast.get<Employment>("employment"), Employment.DIRECTOR)
+                    predicates.add(castType)
+                }
+                if (reverseSearchFilter.jobInContent == Employment.WRITER) {
+                    val castType = cb.equal(joinReviewContentCast.get<Employment>("employment"), Employment.WRITER)
+                    predicates.add(castType)
+                }
+            }
+
+            val actorPredicate = cb.like(
+                cb.upper(joinReviewContentCast.get("name")),
+                "%" + reverseSearchFilter.searchedCastMember.toUpperCase() + "%"
+            )
+
+            predicates.add(actorPredicate)
+        }
+
+        cq.where(*predicates.toTypedArray())
 
         cq.select(review.get("cinematographicContent"))
             .distinct(true)
+
 
         val query: TypedQuery<CinematographicContent> = em.createQuery(cq)
 
@@ -91,7 +157,10 @@ class ReviewRepositoryCustomImpl: ReviewRepositoryCustom {
 
         //filtering title id
         val titleIdPredicate: Predicate =
-            cb.equal(review.get<CinematographicContent>("cinematographicContent").get<String>("titleId"), content.titleId)
+            cb.equal(
+                review.get<CinematographicContent>("cinematographicContent").get<String>("titleId"),
+                content.titleId
+            )
         predicates.add(titleIdPredicate)
 
 
@@ -113,21 +182,21 @@ class ReviewRepositoryCustomImpl: ReviewRepositoryCustom {
                     predicates.add(withSpoiler)
                 }
             } else {
-                val isPublic = cb.equal(review.get<String>("isPublic"), false)
+                val isPublic = cb.equal(review.get<Boolean>("isPublic"), false)
                 predicates.add(isPublic)
             }
         }
 
         //filtering language
         if (applicableFilters.language != null) {
-            val languagePredicate: Predicate = cb.equal(review.get<Boolean>("language"), applicableFilters.language)
+            val languagePredicate: Predicate = cb.equal(review.get<String>("language"), applicableFilters.language)
             predicates.add(languagePredicate)
         }
 
         //filtering location
         if (applicableFilters.geographicLocation != null) {
             val geographicLocationPredicate: Predicate =
-                cb.equal(review.get<Boolean>("geographicLocation"), applicableFilters.geographicLocation)
+                cb.equal(review.get<String>("geographicLocation"), applicableFilters.geographicLocation)
             predicates.add(geographicLocationPredicate)
         }
 

@@ -17,7 +17,6 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     open var episodeNumber: Int? = null
     open lateinit var resumeText: String
     open lateinit var text: String
-    open lateinit var rating: Rating
     open lateinit var date: LocalDateTime
     open lateinit var language : String
     open var valoration: Int = 0
@@ -31,6 +30,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     open var id: Long? = null
     open val isPublic = false
     open val includeSpoiler = false
+    open val rating: Double
 
     init {
         this.seasonNumber = contentInfo.seasonNumber
@@ -38,7 +38,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
 
         this.resumeText = reviewInfo.resumeText
         this.text = reviewInfo.text
-        this.rating = reviewInfo.rating
+        this.rating = checkRatingValue(reviewInfo.rating)
         this.date = reviewInfo.date
         this.language = reviewInfo.language
         this.reviewType = reviewInfo.reviewType
@@ -68,6 +68,14 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
             }
     }
 
+    fun validate() {
+        if (reviewType == ReviewType.SERIE || reviewType == ReviewType.MOVIE){
+            episodeNumber = null
+            seasonNumber  = null
+        }
+        this.cinematographicContent?.let { reviewType.validate(it, this) }
+    }
+
     private fun createValoration(userId: String, platform: String, valoration: Valoration) =
         ValorationData(this, userId, platform, valoration)
 
@@ -83,14 +91,12 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         return usersWhoValued.count { it.valoration == valorationToFind }
     }
 
-    fun validate() {
-        if (reviewType == ReviewType.SERIE || reviewType == ReviewType.MOVIE){
-            episodeNumber = null
-            seasonNumber  = null
-        }
-        this.cinematographicContent?.let { reviewType.validate(it, this) }
-    }
 
+    private fun checkRatingValue(rating: Double): Double {
+        if (rating<0 || rating > 5) throw InvalidReviewRatingException()
+
+        return rating
+    }
 }
 
 

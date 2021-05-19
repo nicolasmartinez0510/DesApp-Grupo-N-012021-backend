@@ -15,9 +15,9 @@ abstract class CinematographicContentDTO{
 
             return if (content.isSerie()){
                 val serie = content as Serie
-                SerieDTO(serie.titleId, serie.title, actors, directors, writers, serie.averageRating, serie.seasons.size)
+                SerieDTO(serie.titleId, serie.title, serie.startYear!!,actors, directors, writers, serie.averageRating, serie.seasons.size)
             } else {
-                MovieDTO(content.titleId, content.title, actors, directors, writers, content.averageRating)
+                MovieDTO(content.titleId, content.title, content.startYear!!, actors, directors, writers, content.averageRating)
             }
         }
 
@@ -28,12 +28,14 @@ abstract class CinematographicContentDTO{
 }
 
 class MovieDTO(val titleId: String, val title: String,
+               val startYear: Int,
                val actorsName: List<String>,
                val directorsName: List<String>,
                val writersName: List<String>,
                val rating: Double,) : CinematographicContentDTO()
 
 class SerieDTO(val titleId: String, val title: String,
+               val startYear: Int,
                val actorsName: List<String>,
                val directorsName: List<String>,
                val writersName: List<String>,

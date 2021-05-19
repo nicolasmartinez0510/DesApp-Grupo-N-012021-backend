@@ -137,7 +137,7 @@ class FakeDataConfiguration {
             val reviewInfo = ReviewInfo(
                 resumeText = faker.lorem().sentence(),
                 text = "TEXT " + faker.lorem().sentence(),
-                rating = faker.options().option(Rating::class.java),
+                rating = faker.number().randomDouble(2,1,5),
                 date = faker.date().past(3000, TimeUnit.DAYS)
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                 language = faker.options().option(Language::class.java).toString(),
@@ -202,7 +202,7 @@ class FakeDataConfiguration {
         val reviewInfo = ReviewInfo(
             resumeText = faker.lorem().sentence(),
             text = "TEXT " + faker.lorem().sentence(),
-            rating = faker.options().option(Rating::class.java),
+            rating = faker.number().randomDouble(2,1,5),
             date = faker.date().past(3000, TimeUnit.DAYS)
                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
             language = "ENGLISH",
