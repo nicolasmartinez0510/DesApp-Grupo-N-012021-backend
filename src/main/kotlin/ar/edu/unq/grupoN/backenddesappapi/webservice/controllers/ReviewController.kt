@@ -101,7 +101,7 @@ class ReviewController {
 
     }
 
-    @ApiOperation(value = "Search reviews on a specific titleId content.")
+    @ApiOperation(value = "Search reviews on a specific titleId content with filters.")
     @RequestMapping(value = ["/search"], method = [RequestMethod.GET])
     fun getReviewsFrom(
         @ApiParam(value = "wanted content's titleId", example = "GladiatorID", required = true)
@@ -157,13 +157,7 @@ class ReviewController {
         return ResponseEntity.ok(reviewsResult)
     }
 
-    @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
-    @RequestMapping(value = ["", "/"], method = [RequestMethod.GET])
-    fun reviews(): ResponseEntity<*>? {
-        return ResponseEntity.ok().body(reviewService.findAll())
-    }
-
-    @ApiOperation(value = "reverse search")
+    @ApiOperation(value = "Search a content by filters")
     @RequestMapping(value = ["/searchContent"], method = [RequestMethod.GET])
     fun searchContent(
         @RequestParam
@@ -192,6 +186,12 @@ class ReviewController {
             reviewRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
         )
         return ResponseEntity.ok().body(reviewService.findContentBy(reverseSearchFilter))
+    }
+
+    @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
+    @RequestMapping(value = ["", "/"], method = [RequestMethod.GET])
+    fun reviews(): ResponseEntity<*>? {
+        return ResponseEntity.ok().body(reviewService.findAll())
     }
 }
 
