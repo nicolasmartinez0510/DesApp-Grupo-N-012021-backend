@@ -45,13 +45,7 @@ class ReviewController {
     )
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
-        val review: ReviewDTO = try {
-            reviewService.saveReview(createReviewRequest)
-        } catch (e: ReviewTypeException) {
-            return ResponseEntity.badRequest().body(createExceptionResponse(e))
-        }
-
-        return ResponseEntity.ok(review)
+        return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
     }
 
     @ApiOperation(
@@ -69,14 +63,7 @@ class ReviewController {
         @PathVariable reviewId: Long,
         @RequestBody valorationDTO: ValorationDTO
     ): ResponseEntity<*>? {
-        val review: ReviewDTO = try {
-            reviewService.rate(reviewId, valorationDTO)
-        } catch (e: NoSuchElementException) {
-
-            return ResponseEntity.badRequest().body(createExceptionResponse(e))
-        }
-
-        return ResponseEntity.ok(review)
+        return ResponseEntity.ok(reviewService.rate(reviewId, valorationDTO))
 
     }
 
@@ -90,15 +77,7 @@ class ReviewController {
         @PathVariable reviewId: Long,
         @RequestBody reportDTO: ReportDTO
     ): ResponseEntity<*>? {
-        val review: ReviewDTO = try {
-            reviewService.report(reviewId, reportDTO)
-        } catch (e: Exception) {
-
-            return ResponseEntity.badRequest().body(createExceptionResponse(e))
-        }
-
-        return ResponseEntity.ok(review)
-
+        return ResponseEntity.ok(reviewService.report(reviewId, reportDTO))
     }
 
     @ApiOperation(value = "Search reviews on a specific titleId content with filters.")
@@ -152,9 +131,8 @@ class ReviewController {
                 contentType, seasonNumber, episodeNumber, orderByDate = orderByDate, orderByRating,
                 order = order?.toString(), page
             )
-        val reviewsResult = reviewService.search(titleId, applicableFilters)
 
-        return ResponseEntity.ok(reviewsResult)
+        return ResponseEntity.ok(reviewService.search(titleId, applicableFilters))
     }
 
     @ApiOperation(value = "Search a content by filters")
@@ -185,22 +163,14 @@ class ReviewController {
         val reverseSearchFilter = ReverseSearchFilter(
             reviewRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
         )
-        return ResponseEntity.ok().body(reviewService.findContentBy(reverseSearchFilter))
+        return ResponseEntity.ok(reviewService.findContentBy(reverseSearchFilter))
     }
 
     @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
     @RequestMapping(value = ["", "/"], method = [RequestMethod.GET])
     fun reviews(): ResponseEntity<*>? {
-        return ResponseEntity.ok().body(reviewService.findAll())
+        return ResponseEntity.ok(reviewService.findAll())
     }
-}
-
-fun createExceptionResponse(e: Exception): MutableMap<String, String> {
-    val exceptionResponse = mutableMapOf<String, String>()
-    exceptionResponse["error"] = e::class.simpleName.toString()
-    exceptionResponse["message"] = e.message.toString()
-
-    return exceptionResponse
 }
 
 data class CreateReviewRequest(
