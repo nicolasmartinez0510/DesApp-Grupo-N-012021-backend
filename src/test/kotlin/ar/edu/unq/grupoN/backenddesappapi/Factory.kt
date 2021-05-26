@@ -8,14 +8,14 @@ import java.time.LocalDateTime
 class Factory {
 
     fun aPublicReview(): Public{
-        val reviewInfo = ReviewInfo(resumeText, text, Rating.THREE, date, ReviewType.MOVIE, language, geographicLocation)
+        val reviewInfo = ReviewInfo(resumeText, text, 3.0, date, ReviewType.MOVIE, language, geographicLocation)
         val publicReviewInfo = PublicReviewInfo(includeSpoiler, username, userId)
         val contentInfo = ContentInfo(gladiatorMovie(), platform)
         return Public(contentInfo, reviewInfo, publicReviewInfo)
     }
 
     fun publicReviewOn(
-        cinematographicContent: CinematographicContent, rating: Rating,
+        cinematographicContent: CinematographicContent, rating: Double,
         reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Public {
         val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language, geographicLocation)
@@ -34,7 +34,7 @@ class Factory {
 
     fun premiumReviewOn(
         cinematographicContent: CinematographicContent,
-        rating: Rating, reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
+        rating: Double, reviewType: ReviewType, seasonNumber: Int? = null, episodeNumber: Int? = null
     ): Premium {
         val reviewInfo = ReviewInfo(resumeText, text, rating, date, reviewType, language, geographicLocation)
         val reviewerId = "ASDFfktuyPTi9r8rY"

@@ -22,19 +22,19 @@ abstract class ReviewDTO {
 
     companion object {
         fun fromModel(review: Review): ReviewDTO {
-            return if (review.isPublic()) {
+            return if (review.isPublic) {
                 val publicReview = review as Public
                 PublicDTO(review.id,review.cinematographicContent!!.titleId,
                 review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
-                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valoration,
-                    publicReview.includeSpoiler, publicReview.userId,
+                    review.seasonNumber, review.episodeNumber, review.reviewType, review.valoration ,
+                    publicReview.reports.size, publicReview.includeSpoiler, publicReview.userId,
                     publicReview.username, publicReview.geographicLocation)
             } else {
                 val premiumReview = review as Premium
                 PremiumDTO(review.id,review.cinematographicContent!!.titleId,
                     review.platform, review.language, review.resumeText, review.text, review.rating, review.date,
                     review.seasonNumber, review.episodeNumber, review.reviewType, review.valoration,
-                    premiumReview.geographicLocation, premiumReview.reviewerId)
+                    premiumReview.reports.size, premiumReview.geographicLocation, premiumReview.reviewerId)
             }
         }
     }
@@ -52,7 +52,7 @@ class PublicDTO(
     val language: String,
     val resumeText: String,
     val text: String,
-    val rating: Rating,
+    val rating: Double,
     val date: LocalDateTime,
     @ApiModelProperty(value = "This field is only used when you want to add a review on a specific chapter in a Serie.")
     val seasonNumber: Int? = null,
@@ -61,6 +61,8 @@ class PublicDTO(
     val reviewType: ReviewType,
     @ApiModelProperty(hidden = true)
     val valoration: Int = 0,
+    @ApiModelProperty(hidden = true)
+    val reportsAmount: Int = 0,
     val includeSpoiler: Boolean = false,
     val userId: String,
     val username: String,
@@ -85,7 +87,7 @@ class PremiumDTO(
     val language: String,
     val resumeText: String,
     val text: String,
-    val rating: Rating,
+    val rating: Double,
     val date: LocalDateTime,
     @ApiModelProperty(value = "This field is only used when you want to add a review on a specific chapter in a Serie.")
     val seasonNumber: Int? = null,
@@ -93,9 +95,11 @@ class PremiumDTO(
     val episodeNumber: Int? = null,
     val reviewType: ReviewType,
     @ApiModelProperty(hidden = true)
-    val valoration: Int = 0,
+    val valorationAmount: Int = 0,
+    @ApiModelProperty(hidden = true)
+    val reportsAmount: Int = 0,
     val geographicLocation: String,
-    val reviewerId: String) : ReviewDTO() {
+    val reviewerId: String, ) : ReviewDTO() {
 
     override fun toModel(): Review {
         val contentInfo = ContentInfo(null, platform, seasonNumber, episodeNumber)
@@ -115,14 +119,14 @@ data class ValorationDTO(
     @ApiModelProperty(value = "valoration", example = "LIKE", required = true)
     var valoration: Valoration
 )
-{
-    companion object {
-        fun fromModel(valorationData: ValorationData): ValorationDTO {
-            return ValorationDTO(
-                valorationData.userId,
-                valorationData.platform,
-                valorationData.valoration
-            )
-        }
-    }
-}
+
+@ApiModel(description = "Represents information to report a review.")
+data class ReportDTO(
+
+    @ApiModelProperty(value = "userId", example = "Chester", required = true)
+    var userId: String,
+    @ApiModelProperty(value = "platform", example = "Netflix", required = true)
+    var platform: String,
+    @ApiModelProperty(value = "report", example = "SPAM", required = true)
+    var reportType: ReportType
+)

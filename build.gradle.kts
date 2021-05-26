@@ -37,6 +37,7 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 	implementation("io.springfox:springfox-swagger2:2.9.2")
 	implementation("io.springfox:springfox-swagger-ui:2.9.2")
+	implementation("commons-validator:commons-validator:1.4.1")
 
 }
 
