@@ -1,5 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
+import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
 import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
@@ -44,6 +45,7 @@ class ReviewController {
             ApiResponse(code = 400, message = "Bad request in fields")]
     )
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
+    @Authorize
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
     }
@@ -58,6 +60,7 @@ class ReviewController {
             ApiResponse(code = 400, message = "Bad request in fields")]
     )
     @RequestMapping(value = ["/rate/{reviewId}"], method = [RequestMethod.POST])
+    @Authorize
     fun rate(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
@@ -72,16 +75,19 @@ class ReviewController {
         value = "Report a review. If the same user from the same platform rate a review more than one time," +
                 "his/him report was the last who he/she sent."
     )
+    @Authorize
     fun report(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
         @RequestBody reportDTO: ReportDTO
-    ): ResponseEntity<*>? {
+    )
+    : ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.report(reviewId, reportDTO))
     }
 
     @ApiOperation(value = "Search reviews on a specific titleId content with filters.")
     @RequestMapping(value = ["/search"], method = [RequestMethod.GET])
+    @Authorize
     fun getReviewsFrom(
         @ApiParam(value = "wanted content's titleId", example = "GladiatorID", required = true)
         @RequestParam
@@ -137,6 +143,7 @@ class ReviewController {
 
     @ApiOperation(value = "Search a content by filters")
     @RequestMapping(value = ["/searchContent"], method = [RequestMethod.GET])
+    @Authorize
     fun searchContent(
         @RequestParam
         @ApiParam(value = "Select a rating required in a review")
