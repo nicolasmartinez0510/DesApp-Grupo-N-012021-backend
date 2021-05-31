@@ -6,14 +6,19 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-class PlatformAdministrator(@Column(unique = true) val email: String,
-                            @Column(unique = true) val username: String,
-                            @Column(unique = true) val platform: Platform, password:String) {
+class PlatformAdministrator(
+    @Column(unique = true) val email: String,
+    @Column(unique = true) val username: String,
+    @Column(unique = true) val platform: Platform,
+    password: String
+) {
     val password: String = encript(password)
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null
+    var id: Long? = null
+
+    var uuid: String? = null
 }
 
 
