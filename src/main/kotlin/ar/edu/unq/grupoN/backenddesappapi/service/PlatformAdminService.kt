@@ -64,6 +64,20 @@ class PlatformAdminService {
     }
 
     @Transactional
+    fun findByToken(authHeader: String): PlatformAdminInfo {
+        val userId =
+            Jwts
+                .parser()
+                .setSigningKey("reseniaNGroupSecretKey".toByteArray())
+                .parseClaimsJws(authHeader.replace("Bearer ", ""))
+                .body
+                .id
+                .toLong()
+
+        return PlatformAdminInfo.fromModel(repository.findById(userId).get())
+    }
+
+    @Transactional
     fun existByApiKey(apiKey: String) = repository.existsByUuid(apiKey)
 
     @Transactional
@@ -92,18 +106,5 @@ class PlatformAdminService {
             ).compact()
 
         return "Bearer $token"
-    }
-
-    fun findByToken(authHeader: String): PlatformAdminInfo {
-        val userId =
-            Jwts
-            .parser()
-                .setSigningKey("reseniaNGroupSecretKey".toByteArray())
-                .parseClaimsJws(authHeader.replace("Bearer ", ""))
-                .body
-                .id
-                .toLong()
-
-        return PlatformAdminInfo.fromModel(repository.findById(userId).get())
     }
 }
