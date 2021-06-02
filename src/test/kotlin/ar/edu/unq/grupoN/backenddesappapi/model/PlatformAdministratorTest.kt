@@ -15,5 +15,6 @@ class PlatformAdministratorTest {
         assertThat(user.platform).isEqualTo(Platform.NETFLIX)
         assertThat(user.password).isEqualTo(encryptedExpectedPasword)
         assertThat(user.id).isNull()
+        assertThat(user.uuid).isNull()
     }
 }

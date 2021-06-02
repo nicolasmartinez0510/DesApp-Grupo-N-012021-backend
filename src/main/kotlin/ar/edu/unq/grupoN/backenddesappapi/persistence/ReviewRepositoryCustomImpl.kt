@@ -206,7 +206,7 @@ class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
         reviewAndContent: Join<Review, CinematographicContent>
     ) {
         if (reverseSearchFilter.decade != null) {
-            if (reverseSearchFilter.decade < 1900) throw RuntimeException("Invalid year decade. Insert a value equals or greather than 1900.")
+            if (reverseSearchFilter.decade < 1900) throw InvalidDecadeException()
 
             val predicateStartDecade =
                 cb.greaterThanOrEqualTo(reviewAndContent.get("startYear"), reverseSearchFilter.decade)
@@ -262,3 +262,5 @@ class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
     }
 
 }
+
+class InvalidDecadeException : RuntimeException("Invalid year decade. Insert a value equals or greather than 1900.")

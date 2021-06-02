@@ -5,7 +5,9 @@ import ar.edu.unq.grupoN.backenddesappapi.model.imdb.*
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Premium
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Public
 import ar.edu.unq.grupoN.backenddesappapi.service.CinematographicContentService
+import ar.edu.unq.grupoN.backenddesappapi.service.PlatformAdminService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.RegisterRequest
 import com.github.javafaker.Faker
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
@@ -24,15 +26,24 @@ class FakeDataConfiguration {
     @Autowired
     private lateinit var reviewService: ReviewService
 
+    @Autowired
+    private lateinit var adminPlatformService: PlatformAdminService
 
     @Bean
-    fun fakeMoviesAndSeriesInject() =
+    fun fakeDataInject() =
         CommandLineRunner {
             val amountOfEachContent = faker.number().numberBetween(4, 6)
 
             createDataToSwagger(cinematographicContentService, reviewService)
             createMovies(amountOfEachContent, cinematographicContentService, reviewService)
             createSeries(amountOfEachContent, cinematographicContentService, reviewService)
+
+            adminPlatformService.register(
+                RegisterRequest(
+                    "chester", Platform.PLEX,
+                    "resenia.grupon.desapp2021s1@gmail.com", "1234"
+                )
+            )
         }
 
     // private auxiliar functions for generate fake data.
@@ -137,7 +148,7 @@ class FakeDataConfiguration {
             val reviewInfo = ReviewInfo(
                 resumeText = faker.lorem().sentence(),
                 text = "TEXT " + faker.lorem().sentence(),
-                rating = faker.number().randomDouble(2,1,5),
+                rating = faker.number().randomDouble(2, 1, 5),
                 date = faker.date().past(3000, TimeUnit.DAYS)
                     .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
                 language = faker.options().option(Language::class.java).toString(),
@@ -191,7 +202,7 @@ class FakeDataConfiguration {
         reviewService: ReviewService
     ) {
         val cast = getCastMembers(faker.number().numberBetween(5, 8))
-        cast.add(CastMember("Chestersaurio",Employment.ACTOR,"NOTHING","Pepe",1999,null))
+        cast.add(CastMember("Chestersaurio", Employment.ACTOR, "NOTHING", "Pepe", 1999, null))
         val gladiatorMovie =
             Movie(
                 basicInformation = getBasicInformation(),
@@ -202,7 +213,7 @@ class FakeDataConfiguration {
         val reviewInfo = ReviewInfo(
             resumeText = faker.lorem().sentence(),
             text = "TEXT " + faker.lorem().sentence(),
-            rating = faker.number().randomDouble(2,1,5),
+            rating = faker.number().randomDouble(2, 1, 5),
             date = faker.date().past(3000, TimeUnit.DAYS)
                 .toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime(),
             language = "ENGLISH",

@@ -38,6 +38,7 @@ dependencies {
 	implementation("io.springfox:springfox-swagger2:2.9.2")
 	implementation("io.springfox:springfox-swagger-ui:2.9.2")
 	implementation("commons-validator:commons-validator:1.4.1")
+	implementation("io.jsonwebtoken:jjwt:0.9.1")
 
 }
 
