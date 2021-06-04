@@ -18,3 +18,21 @@ NOTES:
 
 KNOWN ISSUES:
 * -
+
+------------------------------------------------------------------------------------
+TAG ENTREGA 2.0
+------------------------------------------------------------------------------------
+NEW FEATURES:
+ * deployment of the presentation tier as a standalone application.
+ * internationalization of frontend(ES-US).
+ * build backend.
+ * automatics deploys of frontend with Heroku.
+ * build frontend.
+ * model coverage +90%.
+ * created endpoints: search reviews(complete with filters), report review and inverse search(with filters).
+
+NOTES:
+* -
+
+KNOWN ISSUES:
+* -
