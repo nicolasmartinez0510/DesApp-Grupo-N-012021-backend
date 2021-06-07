@@ -23,7 +23,8 @@ KNOWN ISSUES:
 TAG ENTREGA 2.0
 ------------------------------------------------------------------------------------
 NEW FEATURES:
- * deployment of the presentation tier as a standalone application.
+ * deployment of the presentation tier as a standalone application
+ (https://github.com/nicolasmartinez0510/DesApp-Grupo-N-012021-frontend).
  * internationalization of frontend(ES-US).
  * build backend.
  * automatics deploys of frontend with Heroku.
