@@ -10,22 +10,27 @@ import javax.persistence.*
 abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     @ManyToOne(fetch = FetchType.EAGER)
     open var cinematographicContent: CinematographicContent? = contentInfo.cinematographicContent
+
     open var platform: String = contentInfo.platform
     open lateinit var reviewType: ReviewType
     open var seasonNumber: Int? = null
     open var episodeNumber: Int? = null
     open lateinit var resumeText: String
     open lateinit var text: String
-    open lateinit var rating: Rating
     open lateinit var date: LocalDateTime
     open lateinit var language : String
-    open var valorationSum: Int = 0
+    open var valoration: Int = 0
     open lateinit var geographicLocation: String
-    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     open var usersWhoValued: MutableSet<ValorationData> = mutableSetOf()
+    @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    open val reports: MutableList<Report> = mutableListOf()
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     open var id: Long? = null
+    open val isPublic = false
+    open val includeSpoiler = false
+    open val rating: Double
 
     init {
         this.seasonNumber = contentInfo.seasonNumber
@@ -33,7 +38,7 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
 
         this.resumeText = reviewInfo.resumeText
         this.text = reviewInfo.text
-        this.rating = reviewInfo.rating
+        this.rating = checkRatingValue(reviewInfo.rating)
         this.date = reviewInfo.date
         this.language = reviewInfo.language
         this.reviewType = reviewInfo.reviewType
@@ -41,40 +46,26 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
     }
 
     fun rate(userId:String, platform:String, valoration: Valoration){
-        val existingValoration: ValorationData? = usersWhoValued.firstOrNull {
-                aValoration -> aValoration.isFromUser(userId, platform)
-        }
+        val existingValoration = usersWhoValued.firstOrNull { it.isFromUser(userId, platform) }
+
         if (existingValoration == null) {
             val newValoration = createValoration(userId, platform, valoration)
             usersWhoValued.add(newValoration)
-            operationOverValoration(valoration)
         } else {
-            checkOperation(existingValoration, valoration)
             existingValoration.valoration = valoration
         }
+
+        updateValoration()
     }
 
-    fun amountOf(valoration: Valoration):Int{
-        return counter(valoration)
-    }
-
-    open fun isPublic() = false
-
-    private fun createValoration(userId: String, platform: String, valoration: Valoration) =
-        ValorationData(this, userId, platform, valoration)
-
-    private fun counter(valorationToFind: Valoration):Int{
-        return usersWhoValued.count { it.valoration == valorationToFind }
-    }
-
-    private fun operationOverValoration(valoration: Valoration) {
-        this.valorationSum += valoration.toInt()
-    }
-
-    private fun checkOperation(existingValoration: ValorationData, newValoration: Valoration) {
-        if (existingValoration.valoration != newValoration){
-            operationOverValoration(newValoration)
-        }
+    fun report(userId: String, userPlatform: String, reportType: ReportType) {
+        val existingReport = reports.firstOrNull { it.isFromUser(userId, userPlatform) }
+            if ( existingReport == null ) {
+                val newReport = Report(userId, userPlatform, reportType)
+                reports.add(newReport)
+            } else {
+                existingReport.reportType = reportType
+            }
     }
 
     fun validate() {
@@ -85,6 +76,27 @@ abstract class Review(contentInfo: ContentInfo, reviewInfo: ReviewInfo) {
         this.cinematographicContent?.let { reviewType.validate(it, this) }
     }
 
+    private fun createValoration(userId: String, platform: String, valoration: Valoration) =
+        ValorationData(this, userId, platform, valoration)
+
+    private fun updateValoration() {
+        valoration = amountOf(Valoration.LIKE) - amountOf(Valoration.DISLIKE)
+    }
+
+    private fun amountOf(valoration: Valoration):Int{
+        return counter(valoration)
+    }
+
+    private fun counter(valorationToFind: Valoration):Int{
+        return usersWhoValued.count { it.valoration == valorationToFind }
+    }
+
+
+    private fun checkRatingValue(rating: Double): Double {
+        if (rating<0 || rating > 5) throw InvalidReviewRatingException()
+
+        return rating
+    }
 }
 
 
