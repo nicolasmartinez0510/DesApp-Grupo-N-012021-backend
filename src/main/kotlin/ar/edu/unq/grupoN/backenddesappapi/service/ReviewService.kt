@@ -3,7 +3,6 @@ package ar.edu.unq.grupoN.backenddesappapi.service
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepositoryCustomImpl
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 class ReviewService {
 
     @Autowired
-    private lateinit var basicReviewRepository: ReviewRepository
-
-    @Autowired
-    private lateinit var customReviewRepository: ReviewRepositoryCustomImpl
+    private lateinit var reviewRepository: ReviewRepository
 
     @Autowired
     private lateinit var contentRepository: CinematographicContentRepository
@@ -36,7 +32,7 @@ class ReviewService {
 
     @Transactional
     fun rate(reviewId: Long, valorationDTO: ValorationDTO): ReviewDTO {
-        val review: Review = basicReviewRepository.findById(reviewId).get()
+        val review: Review = reviewRepository.findById(reviewId).get()
 
         review.rate(valorationDTO.userId, valorationDTO.platform, valorationDTO.valoration)
 
@@ -45,7 +41,7 @@ class ReviewService {
 
     @Transactional
     fun report(reviewId: Long, reportDTO: ReportDTO): ReviewDTO {
-        val review: Review = basicReviewRepository.findById(reviewId).get()
+        val review: Review = reviewRepository.findById(reviewId).get()
         if(!review.isPublic) throw RuntimeException("Cannot report a premium review.")
         review.report(reportDTO.userId, reportDTO.platform, reportDTO.reportType)
 
@@ -53,28 +49,28 @@ class ReviewService {
     }
 
     @Transactional
-    fun findContentBy(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContentDTO> {
-        return customReviewRepository.findContentInReverseSearch(reverseSearchFilter)
-            .map { CinematographicContentDTO.fromModel(it) }
-    }
-
-    @Transactional
     fun search(titleId: String, applicableFilters: ApplicableFilters): List<ReviewDTO> {
         val content = contentRepository.findById(titleId).get()
 
-        val reviews = customReviewRepository.findReviews(content, applicableFilters)
+        val reviews = reviewRepository.findReviews(content, applicableFilters)
 
         return reviews.map { ReviewDTO.fromModel(it) }
     }
 
     @Transactional
-    fun addFakeReview(review: Review) {
-        basicReviewRepository.save(review)
+    fun findContentBy(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContentDTO> {
+        return reviewRepository.findContentInReverseSearch(reverseSearchFilter)
+            .map { CinematographicContentDTO.fromModel(it) }
     }
 
     @Transactional
-    fun findAll(): List<ReviewDTO> = basicReviewRepository.findAll().map { ReviewDTO.fromModel(it) }
+    fun addFakeReview(review: Review) {
+        reviewRepository.save(review)
+    }
+
+    @Transactional
+    fun findAll(): List<ReviewDTO> = reviewRepository.findAll().map { ReviewDTO.fromModel(it) }
 
 
-    private fun saveReview(review: Review) = ReviewDTO.fromModel(basicReviewRepository.save(review))
+    private fun saveReview(review: Review) = ReviewDTO.fromModel(reviewRepository.save(review))
 }
