@@ -1,6 +1,7 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
+import ar.edu.unq.grupoN.backenddesappapi.model.PlatformAdministrator
 import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
 import javax.persistence.*
 
@@ -19,6 +20,8 @@ abstract class CinematographicContent(){
     open var cast: MutableList<CastMember> = mutableListOf()
     open var averageRating: Double = 0.0
     open var votesAmount: Int = 0
+    @OneToMany(cascade = [CascadeType.ALL])
+    open val subscribers: MutableList<PlatformAdministrator> = mutableListOf()
 
     constructor(basicInformation: BasicInformation, cast: MutableList<CastMember>, rating: RatingInfo): this(){
         this.cast = cast
@@ -28,6 +31,8 @@ abstract class CinematographicContent(){
     }
 
     open fun isSerie() = false
+
+    fun addToSubscribers(platformAdministrator: PlatformAdministrator) = subscribers.add(platformAdministrator)
 
     private fun set_basic_information(basicInformation: BasicInformation) {
         this.titleId = basicInformation.titleId

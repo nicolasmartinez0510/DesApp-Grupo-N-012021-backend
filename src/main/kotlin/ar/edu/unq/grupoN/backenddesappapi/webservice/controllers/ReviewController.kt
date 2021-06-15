@@ -2,6 +2,7 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
 import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.service.MailSenderService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import io.swagger.annotations.*
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.servlet.http.HttpServletRequest
 
 
 @ServiceREST
@@ -18,6 +20,9 @@ class ReviewController {
 
     @Autowired
     private lateinit var reviewService: ReviewService
+
+    @Autowired
+    private lateinit var notificatorService: MailSenderService
 
     @ApiOperation(
         value = "Create a new review about a specific content. Check Models section to know all kinds of reviews types and structures. " +
@@ -47,7 +52,29 @@ class ReviewController {
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     @Authorize
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
-        return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
+        val createdReview = reviewService.saveReview(createReviewRequest)
+
+        notificatorService.notifyToAllSubscribersOf(createReviewRequest.titleId, createdReview)
+
+        return ResponseEntity.ok(createdReview)
+    }
+
+    @ApiOperation(
+        value = "Subscribe to receive notifications on new reviews from a content."
+    )
+    @Authorize
+    @RequestMapping(value = ["/subscribe"], method = [RequestMethod.POST])
+    fun subscribeToReceiveNotificationsOn(
+        @ApiParam(example = "GladiatorID")
+        @RequestParam
+        titleId: String,
+        @ApiParam(hidden = true)
+        @RequestHeader("Authorization")
+        authHeader: String): ResponseEntity<*>?{
+
+        val response = notificatorService.activeNotificationsTo(authHeader, titleId)
+
+        return ResponseEntity.ok(response)
     }
 
     @ApiOperation(

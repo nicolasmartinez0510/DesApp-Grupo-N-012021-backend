@@ -41,7 +41,7 @@ class FakeDataConfiguration {
             adminPlatformService.register(
                 RegisterRequest(
                     "chester", Platform.PLEX,
-                    "resenia.grupon.desapp2021s1@gmail.com", "1234"
+                    "netflix.desapp2021.grupon@gmail.com", "1234"
                 )
             )
         }

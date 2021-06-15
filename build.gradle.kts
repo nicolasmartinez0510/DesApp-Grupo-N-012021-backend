@@ -39,6 +39,8 @@ dependencies {
 	implementation("io.springfox:springfox-swagger-ui:2.9.2")
 	implementation("commons-validator:commons-validator:1.4.1")
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
+	implementation(	"javax.mail:mail:1.5.0-b01")
+	implementation("org.springframework.boot:spring-boot-starter-mail")
 
 }
 

@@ -5,6 +5,7 @@ import ar.edu.unq.grupoN.backenddesappapi.service.dto.LoginCredentialsRequest
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.RegisterRequest
 import io.jsonwebtoken.Jwts
 import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.http.HttpHeaders
@@ -52,7 +53,11 @@ class PlatformAdminController {
         value = "For see info of you user in system.This operation is available only for authenticated users"
     )
     @RequestMapping(value=["/me"], method = [RequestMethod.GET])
-    fun userInfo(@RequestHeader("Authentication") authHeader: String): ResponseEntity<*>? {
+    fun userInfo(
+        @ApiParam(hidden = true)
+        @RequestHeader("Authentication")
+        authHeader: String
+    ): ResponseEntity<*>? {
         return ResponseEntity.ok(platformAdminService.findByToken(authHeader))
     }
 
