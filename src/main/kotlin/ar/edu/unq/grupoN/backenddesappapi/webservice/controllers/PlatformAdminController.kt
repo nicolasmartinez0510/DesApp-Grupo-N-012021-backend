@@ -3,7 +3,6 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 import ar.edu.unq.grupoN.backenddesappapi.service.PlatformAdminService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.LoginCredentialsRequest
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.RegisterRequest
-import io.jsonwebtoken.Jwts
 import io.swagger.annotations.ApiOperation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
