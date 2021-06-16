@@ -10,6 +10,8 @@ import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewReq
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.Cacheable
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.io.Serializable
@@ -33,6 +35,12 @@ class ReviewService {
     @Autowired
     private lateinit var cacheManager: CacheManager
 
+    @Autowired
+    private lateinit var redisTemplate: RedisTemplate<String, Any>
+
+    @Autowired
+    private lateinit var topic: ChannelTopic
+
     @Transactional
     fun saveReview(createReviewRequest: CreateReviewRequest): ReviewDTO {
         val content = contentRepository.findById(createReviewRequest.titleId).get()
@@ -43,7 +51,8 @@ class ReviewService {
         content.addRate(review)
 
         performedContentRepository.save(PerformedContent.from(content))
-
+        redisTemplate.convertAndSend(topic.topic, createReviewRequest.titleId)
+        println("Event published")
         return saveReview(review)
     }
 
