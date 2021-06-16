@@ -33,31 +33,24 @@ jobs:
       - name: Run tests
         run: ./gradlew test -i
         
-#       - name: Update coverage report in Codacy
-#         if: success() && github.ref == 'refs/heads/main'
-#         env:
-#           CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
-#         run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Kotlin --force-language -r build/reports/jacoco/test/jacocoTestReport.xml
+      - name: Update coverage report in Codacy
+        if: success() && github.ref == 'refs/heads/main'
+        env:
+          CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        run: bash <(curl -Ls https://coverage.codacy.com/get.sh) report -l Kotlin --force-language -r build/reports/jacoco/test/jacocoTestReport.xml
       
       - name: Deploy Heroku App
         if: success() && github.ref == 'refs/heads/main'
         uses: akhileshns/heroku-deploy@v3.12.12
         with:
-#           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-#           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
-#           heroku_email: ${{secrets.HEROKU_MAIL_ADDRESS}}
-          heroku_api_key: b61af778-d3d6-4f54-a902-bdb3e442c0d3
-          heroku_app_name: desapp-grupo-n-012021-backend
-          heroku_email: martinez.nicolas0510@gmail.com         
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_MAIL_ADDRESS}}       
       
-#       - name: Deploy Dev with Heroku
-#         if: success() && github.ref == 'refs/heads/development'
-#         uses: akhileshns/heroku-deploy@v3.12.12
-#         with:
-#           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-#           heroku_app_name: ${{secrets.HEROKU_APP_DEV_NAME}}
-#           heroku_email: ${{secrets.HEROKU_MAIL_ADDRESS}}    
-#           heroku_api_key: b61af778-d3d6-4f54-a902-bdb3e442c0d3
-#           heroku_app_name: nombre_del_deploy
-#           heroku_email: martinez.nicolas0510@gmail.com         
-      
+      - name: Deploy Dev with Heroku
+        if: success() && github.ref == 'refs/heads/development'
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{secrets.HEROKU_DEV_APP_NAME}}
+          heroku_email: ${{secrets.HEROKU_MAIL_ADDRESS}}    
