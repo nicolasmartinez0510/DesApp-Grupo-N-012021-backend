@@ -1,7 +1,7 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
-import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
+import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import javax.persistence.*
 
 @Entity
@@ -19,15 +19,20 @@ abstract class CinematographicContent(){
     open var cast: MutableList<CastMember> = mutableListOf()
     open var averageRating: Double = 0.0
     open var votesAmount: Int = 0
+    open var sumVotes: Double = 0.0
 
-    constructor(basicInformation: BasicInformation, cast: MutableList<CastMember>, rating: RatingInfo): this(){
+    constructor(basicInformation: BasicInformation, cast: MutableList<CastMember>): this(){
         this.cast = cast
         set_basic_information(basicInformation)
-        set_rating(rating)
-
     }
 
     open fun isSerie() = false
+
+    fun addRate(review: Review) {
+        votesAmount += 1
+        sumVotes += review.rating
+        averageRating = sumVotes / votesAmount
+    }
 
     private fun set_basic_information(basicInformation: BasicInformation) {
         this.titleId = basicInformation.titleId
@@ -36,11 +41,6 @@ abstract class CinematographicContent(){
         this.isAdultContent = basicInformation.isAdultContent
         this.startYear = basicInformation.startYear
         this.runtimeMinutes = basicInformation.runtimeMinutes
-    }
-
-    private fun set_rating(rating: RatingInfo) {
-        this.averageRating = rating.averageRating
-        this.votesAmount = rating.votesAmount
     }
 
     open fun haveEpisode(seasonNumber: Int?, episodeNumber: Int?) = false
