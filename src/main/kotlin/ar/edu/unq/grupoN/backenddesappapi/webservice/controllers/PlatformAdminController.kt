@@ -1,18 +1,18 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
+import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
 import ar.edu.unq.grupoN.backenddesappapi.service.PlatformAdminService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.LoginCredentialsRequest
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.RegisterRequest
+import io.swagger.annotations.ApiModelProperty
 import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestHeader
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.*
 
 @ServiceREST
 @RequestMapping("/api/user")
@@ -51,9 +51,36 @@ class PlatformAdminController {
         value = "For see info of you user in system.This operation is available only for authenticated users"
     )
     @RequestMapping(value=["/me"], method = [RequestMethod.GET])
-    fun userInfo(@RequestHeader("Authentication") authHeader: String): ResponseEntity<*>? {
-        return ResponseEntity.ok(platformAdminService.findByToken(authHeader))
+    fun userInfo(
+        @ApiParam(hidden = true)
+        @RequestHeader("Authentication")
+        apiKey: String
+    ): ResponseEntity<*>? {
+        return ResponseEntity.ok(platformAdminService.findByToken(apiKey))
     }
 
+    @ApiOperation(
+        value = "Subscribe to receive notifications on new reviews from a content. Authorization and Authentication required."
+    )
+    @Authorize
+    @RequestMapping(value = ["/subscribe"], method = [RequestMethod.POST])
+    fun subscribeToReceiveNotificationsOn(
+        @RequestBody
+        subscribeContentRequest: SubscribeContentRequest,
+        @ApiParam(hidden = true)
+        @RequestHeader("Authorization")
+        apiKey: String): ResponseEntity<*>?{
 
+        val response = platformAdminService.activeNotificationsTo(apiKey, subscribeContentRequest)
+
+        return ResponseEntity.ok(response)
+    }
 }
+
+
+data class SubscribeContentRequest(
+    @ApiModelProperty(value= "desired content titleId", example = "GladiatorID")
+    val titleId: String,
+    @ApiModelProperty(value="url for notify news reviews over the content", example="https://rickandmortyapi.com/api/character/2")
+    val url: String
+    )

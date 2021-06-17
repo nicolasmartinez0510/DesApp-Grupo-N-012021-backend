@@ -18,9 +18,10 @@ class RedisConfig {
 
     @Bean
     fun lettuceConnectionFactory(): LettuceConnectionFactory {
+        val env = System.getenv()
         val redisStandaloneConfiguration =
             RedisStandaloneConfiguration(
-                System.getenv().getOrDefault("REDIS_URL", "localhost"),
+                env.getOrDefault("REDIS_URL", "localhost"),
                 6379
             )
         return LettuceConnectionFactory(redisStandaloneConfiguration)

@@ -52,7 +52,6 @@ class ReviewService {
 
         performedContentRepository.save(PerformedContent.from(content))
         redisTemplate.convertAndSend(topic.topic, createReviewRequest.titleId)
-        println("Event published")
         return saveReview(review)
     }
 
