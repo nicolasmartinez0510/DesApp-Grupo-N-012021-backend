@@ -8,15 +8,10 @@ import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.cache.CacheManager
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.io.Serializable
-import javax.persistence.Entity
-import javax.persistence.Id
 
 
 @Service
@@ -26,14 +21,10 @@ class ReviewService {
     private lateinit var reviewRepository: ReviewRepository
 
     @Autowired
-    private lateinit var contentRepository: CinematographicContentRepository
-
-    @Autowired
     private lateinit var performedContentRepository: PerformedContentRepository
 
-    //used to setup configuration on Redis
     @Autowired
-    private lateinit var cacheManager: CacheManager
+    private lateinit var contentRepository: CinematographicContentRepository
 
     @Autowired
     private lateinit var redisTemplate: RedisTemplate<String, Any>
@@ -50,9 +41,7 @@ class ReviewService {
 
         content.addRate(review)
 
-        performedContentRepository.save(PerformedContent.from(content))
-        redisTemplate.convertAndSend(topic.topic, createReviewRequest.titleId)
-        return saveReview(review)
+        return saveAndNotify(review, content, createReviewRequest)
     }
 
     @Transactional
@@ -83,35 +72,21 @@ class ReviewService {
     }
 
     @Transactional
-    @Cacheable(key = "#titleId", value = ["fast-content"])
-    fun performedSearchFor(titleId: String): PerformedContent {
-        return performedContentRepository.findById(titleId).get()
-    }
-
-    @Transactional
     fun findContentBy(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContentDTO> {
         return reviewRepository.findContentInReverseSearch(reverseSearchFilter)
             .map { CinematographicContentDTO.fromModel(it) }
     }
 
-    @Transactional
-    fun findAll(): List<ReviewDTO> = reviewRepository.findAll().map { ReviewDTO.fromModel(it) }
-
+    private fun saveAndNotify(
+        review: Review,
+        content: CinematographicContent,
+        createReviewRequest: CreateReviewRequest
+    ): ReviewDTO {
+        performedContentRepository.save(PerformedContent.from(content))
+        redisTemplate.convertAndSend(topic.topic, createReviewRequest.titleId)
+        return saveReview(review)
+    }
 
     private fun saveReview(review: Review) = ReviewDTO.fromModel(reviewRepository.save(review))
 }
 
-@Entity
-class PerformedContent(
-    @Id
-    val titleId: String,
-    val averageRating: Double,
-    val votesAmount: Int
-) : Serializable {
-
-    companion object {
-        fun from(content: CinematographicContent): PerformedContent {
-            return PerformedContent(content.titleId, content.averageRating, content.votesAmount)
-        }
-    }
-}

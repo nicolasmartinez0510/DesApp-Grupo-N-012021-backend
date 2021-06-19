@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
 
 @Service
-open class ReceiverService: MessageListener {
+class ReceiverService: MessageListener {
     @Autowired
     protected lateinit var contentRepository: CinematographicContentRepository
 
@@ -24,7 +24,7 @@ open class ReceiverService: MessageListener {
             .findById(titleId)
             .get()
             .subscribers
-            .map {
+            .forEach {
                 val content = restTemplate.getForObject(it.url, String::class.java)
                 // TODO: CAMBIAR POR LOGGER
                 println(content)

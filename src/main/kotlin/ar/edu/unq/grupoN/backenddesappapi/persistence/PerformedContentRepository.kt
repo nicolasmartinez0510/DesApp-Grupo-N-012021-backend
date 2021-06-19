@@ -1,6 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.persistence
 
-import ar.edu.unq.grupoN.backenddesappapi.service.PerformedContent
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.PerformedContent
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 

@@ -2,12 +2,12 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
 import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.service.ReviewCacheService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import io.swagger.annotations.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
-import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -19,6 +19,9 @@ class ReviewController {
 
     @Autowired
     private lateinit var reviewService: ReviewService
+
+    @Autowired
+    private lateinit var reviewCacheService: ReviewCacheService
 
     @ApiOperation(
         value = "Create a new review about a specific content. Check Models section to know all kinds of reviews types and structures. " +
@@ -174,7 +177,7 @@ class ReviewController {
         return ResponseEntity.ok(reviewService.findContentBy(reverseSearchFilter))
     }
 
-    @ApiOperation(value = "Find basic information from a content with this performant test.")
+    @ApiOperation(value = "Find basic information from a content with high performance.")
     @RequestMapping(value = ["/performed-search-content"], method = [RequestMethod.GET])
     @Authorize
     fun performantContentSearch(
@@ -182,7 +185,7 @@ class ReviewController {
         @RequestParam titleId: String
     ): ResponseEntity<*>? {
 
-        return ResponseEntity.ok(reviewService.performedSearchFor(titleId))
+        return ResponseEntity.ok(reviewCacheService.performedSearchFor(titleId))
     }
 }
 
