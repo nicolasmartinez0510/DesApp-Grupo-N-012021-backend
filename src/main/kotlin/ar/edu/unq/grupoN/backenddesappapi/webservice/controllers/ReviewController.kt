@@ -45,6 +45,7 @@ class ReviewController {
             ApiResponse(code = 200, message = "Review created succesfully"),
             ApiResponse(code = 400, message = "Bad request in fields")]
     )
+    @Authorize
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
@@ -173,19 +174,15 @@ class ReviewController {
         return ResponseEntity.ok(reviewService.findContentBy(reverseSearchFilter))
     }
 
-    @RequestMapping(value = ["/fastContent"], method = [RequestMethod.GET])
+    @ApiOperation(value = "Find basic information from a content with this performant test.")
+    @RequestMapping(value = ["/performed-search-content"], method = [RequestMethod.GET])
+    @Authorize
     fun performantContentSearch(
         @ApiParam(example = "GladiatorID")
         @RequestParam titleId: String
     ): ResponseEntity<*>? {
 
         return ResponseEntity.ok(reviewService.performedSearchFor(titleId))
-    }
-
-    @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
-    @RequestMapping(value = ["", "/"], method = [RequestMethod.GET])
-    fun reviews(): ResponseEntity<*>? {
-        return ResponseEntity.ok(reviewService.findAll())
     }
 }
 

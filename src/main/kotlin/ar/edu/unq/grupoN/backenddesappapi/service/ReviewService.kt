@@ -85,7 +85,6 @@ class ReviewService {
     @Transactional
     @Cacheable(key = "#titleId", value = ["fast-content"])
     fun performedSearchFor(titleId: String): PerformedContent {
-        println("Le pegue a la bdd")
         return performedContentRepository.findById(titleId).get()
     }
 

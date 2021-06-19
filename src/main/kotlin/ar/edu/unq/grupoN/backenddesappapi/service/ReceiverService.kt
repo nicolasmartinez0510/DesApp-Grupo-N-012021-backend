@@ -1,7 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.service
 
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.PlatformAdministratorRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.MessageListener
