@@ -10,7 +10,12 @@ import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
+import org.springframework.stereotype.Component
 import org.springframework.web.client.RestTemplate
+import redis.embedded.RedisServer
+import java.io.IOException
+import javax.annotation.PostConstruct
+import javax.annotation.PreDestroy
 
 
 @Configuration
@@ -20,10 +25,8 @@ class RedisConfig {
     fun lettuceConnectionFactory(): LettuceConnectionFactory {
         val env = System.getenv()
         val redisStandaloneConfiguration =
-            RedisStandaloneConfiguration(
-                env.getOrDefault("REDIS_URL", "localhost"),
-                6379
-            )
+            RedisStandaloneConfiguration(env.getOrDefault("REDIS_URL","localhost"),
+                env.getOrDefault("REDIS_PORT","6379").toInt())
         return LettuceConnectionFactory(redisStandaloneConfiguration)
     }
 
@@ -60,4 +63,22 @@ class RedisConfig {
         return container
     }
 
+}
+
+@Component
+class EmbeddedRedis {
+    private val redisPort = 6379
+    private lateinit var redisServer: RedisServer
+
+    @PostConstruct
+    @Throws(IOException::class)
+    fun startRedis() {
+        redisServer = RedisServer(redisPort)
+        redisServer.start()
+    }
+
+    @PreDestroy
+    fun stopRedis() {
+        redisServer.stop()
+    }
 }

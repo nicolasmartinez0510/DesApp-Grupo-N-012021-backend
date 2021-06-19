@@ -38,6 +38,7 @@ dependencies {
 	implementation("commons-validator:commons-validator:1.4.1")
 	implementation("io.jsonwebtoken:jjwt:0.9.1")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("it.ozimov:embedded-redis:0.7.1")
 }
 
 tasks.withType<KotlinCompile> {
