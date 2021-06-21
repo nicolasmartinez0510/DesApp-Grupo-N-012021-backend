@@ -1,7 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
-import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
 import ar.edu.unq.grupoN.backenddesappapi.model.SerieInfo
 import javax.persistence.*
 
@@ -10,9 +9,8 @@ import javax.persistence.*
 class Serie(
     basicInformation: BasicInformation,
     cast: MutableList<CastMember>,
-    rating: RatingInfo,
     serieInfo: SerieInfo
-) :  CinematographicContent(basicInformation, cast, rating){
+) :  CinematographicContent(basicInformation, cast){
 
     var endYear: Int? = null
 

@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository
 
 @Repository
 @Configuration
-interface CinematographicContentRepository : CrudRepository<CinematographicContent, String?> {
-}
+interface CinematographicContentRepository : CrudRepository<CinematographicContent, String?>

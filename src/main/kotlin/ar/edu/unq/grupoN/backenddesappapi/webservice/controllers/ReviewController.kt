@@ -45,7 +45,6 @@ class ReviewController {
             ApiResponse(code = 400, message = "Bad request in fields")]
     )
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
-    @Authorize
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
     }
@@ -81,7 +80,7 @@ class ReviewController {
         @PathVariable reviewId: Long,
         @RequestBody reportDTO: ReportDTO
     )
-    : ResponseEntity<*>? {
+            : ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.report(reviewId, reportDTO))
     }
 
@@ -171,6 +170,15 @@ class ReviewController {
             reviewRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
         )
         return ResponseEntity.ok(reviewService.findContentBy(reverseSearchFilter))
+    }
+
+    @RequestMapping(value = ["/fastContent"], method = [RequestMethod.GET])
+    fun performantContentSearch(
+        @ApiParam(example = "GladiatorID")
+        @RequestParam titleId: String
+    ): ResponseEntity<*>? {
+
+        return ResponseEntity.ok(reviewService.performedSearchFor(titleId))
     }
 
     @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)

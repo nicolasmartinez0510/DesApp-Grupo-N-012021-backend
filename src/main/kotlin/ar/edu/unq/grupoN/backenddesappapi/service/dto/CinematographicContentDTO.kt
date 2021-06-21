@@ -1,10 +1,8 @@
 package ar.edu.unq.grupoN.backenddesappapi.service.dto
 
-import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CastMember
-import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
-import ar.edu.unq.grupoN.backenddesappapi.model.imdb.Season
-import ar.edu.unq.grupoN.backenddesappapi.model.imdb.Serie
 import ar.edu.unq.grupoN.backenddesappapi.model.Employment
+import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
+import ar.edu.unq.grupoN.backenddesappapi.model.imdb.Serie
 
 abstract class CinematographicContentDTO{
     companion object {
