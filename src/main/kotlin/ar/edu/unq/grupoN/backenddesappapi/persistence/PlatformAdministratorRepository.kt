@@ -15,4 +15,6 @@ interface PlatformAdministratorRepository : CrudRepository<PlatformAdministrator
     fun existsByUsernameAndPlatform(username: String, platform: Platform): Boolean
 
     fun findByUsernameAndPassword(username: String, encryptedPassword: String): PlatformAdministrator?
+
+    fun findByUuid(uuid: String): PlatformAdministrator
 }
