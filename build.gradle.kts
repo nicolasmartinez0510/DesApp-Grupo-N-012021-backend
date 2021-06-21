@@ -22,6 +22,8 @@ repositories {
 
 dependencies {
 	implementation("com.github.javafaker:javafaker:1.0.2")
+	implementation ("org.slf4j:slf4j-api:1.7.30")
+	implementation("com.tngtech.archunit:archunit:0.18.0")
 	implementation("com.github.vastik:spring-boot-starter-data-faker:1.0.+")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -33,6 +35,7 @@ dependencies {
 	providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("com.tngtech.archunit:archunit-junit5-engine:0.18.0")
 	implementation("io.springfox:springfox-swagger2:2.9.2")
 	implementation("io.springfox:springfox-swagger-ui:2.9.2")
 	implementation("commons-validator:commons-validator:1.4.1")
