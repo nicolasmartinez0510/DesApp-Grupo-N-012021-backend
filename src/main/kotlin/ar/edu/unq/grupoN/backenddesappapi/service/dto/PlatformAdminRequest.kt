@@ -4,6 +4,9 @@ import ar.edu.unq.grupoN.backenddesappapi.model.Platform
 import ar.edu.unq.grupoN.backenddesappapi.model.PlatformAdministrator
 import io.swagger.annotations.ApiModel
 import io.swagger.annotations.ApiModelProperty
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.Id
 
 @ApiModel(description = "Requested information from a new administrator of a specific platform. Only one per platform.")
 data class RegisterRequest(
@@ -46,4 +49,11 @@ class PlatformAdminInfo(
             )
         }
     }
+}
+
+@Entity
+class SubscribedUrl(val apiKey:String, val url: String) {
+    @Id
+    @GeneratedValue
+    var id: Long? = null
 }

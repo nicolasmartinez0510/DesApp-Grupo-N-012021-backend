@@ -1,11 +1,15 @@
 package ar.edu.unq.grupoN.backenddesappapi.service
 
+import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
+import ar.edu.unq.grupoN.backenddesappapi.persistence.PerformedContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.redis.core.RedisTemplate
+import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,17 +21,27 @@ class ReviewService {
     private lateinit var reviewRepository: ReviewRepository
 
     @Autowired
+    private lateinit var performedContentRepository: PerformedContentRepository
+
+    @Autowired
     private lateinit var contentRepository: CinematographicContentRepository
+
+    @Autowired
+    private lateinit var redisTemplate: RedisTemplate<String, Any>
+
+    @Autowired
+    private lateinit var topic: ChannelTopic
 
     @Transactional
     fun saveReview(createReviewRequest: CreateReviewRequest): ReviewDTO {
         val content = contentRepository.findById(createReviewRequest.titleId).get()
         val review = createReviewRequest.reviewToCreate.toModel()
         review.cinematographicContent = content
-
         review.validate()
 
-        return saveReview(review)
+        content.addRate(review)
+
+        return saveAndNotify(review, content, createReviewRequest)
     }
 
     @Transactional
@@ -42,7 +56,7 @@ class ReviewService {
     @Transactional
     fun report(reviewId: Long, reportDTO: ReportDTO): ReviewDTO {
         val review: Review = reviewRepository.findById(reviewId).get()
-        if(!review.isPublic) throw RuntimeException("Cannot report a premium review.")
+        if (!review.isPublic) throw RuntimeException("Cannot report a premium review.")
         review.report(reportDTO.userId, reportDTO.platform, reportDTO.reportType)
 
         return saveReview(review)
@@ -63,14 +77,16 @@ class ReviewService {
             .map { CinematographicContentDTO.fromModel(it) }
     }
 
-    @Transactional
-    fun addFakeReview(review: Review) {
-        reviewRepository.save(review)
+    private fun saveAndNotify(
+        review: Review,
+        content: CinematographicContent,
+        createReviewRequest: CreateReviewRequest
+    ): ReviewDTO {
+        performedContentRepository.save(PerformedContent.from(content))
+        redisTemplate.convertAndSend(topic.topic, createReviewRequest.titleId)
+        return saveReview(review)
     }
-
-    @Transactional
-    fun findAll(): List<ReviewDTO> = reviewRepository.findAll().map { ReviewDTO.fromModel(it) }
-
 
     private fun saveReview(review: Review) = ReviewDTO.fromModel(reviewRepository.save(review))
 }
+

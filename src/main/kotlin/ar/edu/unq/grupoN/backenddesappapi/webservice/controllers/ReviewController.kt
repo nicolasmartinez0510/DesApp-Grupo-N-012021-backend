@@ -2,6 +2,7 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
 import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.service.ReviewCacheService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import io.swagger.annotations.*
@@ -18,6 +19,9 @@ class ReviewController {
 
     @Autowired
     private lateinit var reviewService: ReviewService
+
+    @Autowired
+    private lateinit var reviewCacheService: ReviewCacheService
 
     @ApiOperation(
         value = "Create a new review about a specific content. Check Models section to know all kinds of reviews types and structures. " +
@@ -44,8 +48,8 @@ class ReviewController {
             ApiResponse(code = 200, message = "Review created succesfully"),
             ApiResponse(code = 400, message = "Bad request in fields")]
     )
-    @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     @Authorize
+    @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
     }
@@ -81,7 +85,7 @@ class ReviewController {
         @PathVariable reviewId: Long,
         @RequestBody reportDTO: ReportDTO
     )
-    : ResponseEntity<*>? {
+            : ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.report(reviewId, reportDTO))
     }
 
@@ -173,10 +177,15 @@ class ReviewController {
         return ResponseEntity.ok(reviewService.findContentBy(reverseSearchFilter))
     }
 
-    @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
-    @RequestMapping(value = ["", "/"], method = [RequestMethod.GET])
-    fun reviews(): ResponseEntity<*>? {
-        return ResponseEntity.ok(reviewService.findAll())
+    @ApiOperation(value = "Find basic information from a content with high performance.")
+    @RequestMapping(value = ["/performed-search-content"], method = [RequestMethod.GET])
+    @Authorize
+    fun performantContentSearch(
+        @ApiParam(example = "GladiatorID")
+        @RequestParam titleId: String
+    ): ResponseEntity<*>? {
+
+        return ResponseEntity.ok(reviewCacheService.performedSearchFor(titleId))
     }
 }
 

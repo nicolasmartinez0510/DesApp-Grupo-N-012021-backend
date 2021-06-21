@@ -19,7 +19,7 @@ data class ApplicableFilters(
 )
 
 data class ReverseSearchFilter(
-    val reviewRating: Double? = null,
+    val rating: Double? = null,
     val wellValued: Boolean? = null,
     val genre: String? = null,
     val decade: Int? = null,
