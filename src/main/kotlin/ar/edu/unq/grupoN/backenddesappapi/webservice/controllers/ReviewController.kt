@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 
 @ServiceREST
@@ -26,22 +27,21 @@ class ReviewController {
     @ApiOperation(
         value = "Create a new review about a specific content. Check Models section to know all kinds of reviews types and structures. " +
                 "Aditionally, you must insert property '@type' on the review object, with value 'PUBLIC' or 'PREMIUM'." +
-                " Try this example: {\n" +
-                "\n" +
-                "  \"titleId\": \"GladiatorID\",\n" +
-                "  \"reviewToCreate\": {\n" +
-                "\"@type\":\"PUBLIC\",\n" +
-                "\"platform\":\"PLEX\",\n" +
-                "\"language\":\"ENGLISH\",\n" +
-                "\"resumeText\":\"I love this movie.\",\n" +
+                " Try this example: " +
+                "{ \n" +
+                "\"@type\":\"PUBLIC\", \n" +
+                "\"platform\":\"PLEX\", \n" +
+                "\"language\":\"ENGLISH\", \n" +
+                "\"resumeText\":\"I love this movie.\", \n" +
                 "\"text\":\"Is the best in the world, the true masterpiece!!\",\n" +
                 "\"rating\": 5.0,\n" +
-                "\"date\":\"2016-05-23T14:43:39.354\",\n" +
+                "\"date\":\"2020-05-23T14:43:39.354\",\n" +
                 "\"reviewType\":\"MOVIE\",\n" +
                 "\"includeSpoiler\":true,\n" +
-                "\"userId\":\"chesteroide1\",\n" +
+                "\"userId\":\"nicodyj001\",\n" +
                 "\"username\":\"chester.oide\",\n" +
-                "\"geographicLocation\":\"ARGENTINA\"} }"
+                "\"geographicLocation\":\"ARGENTINA\"\n" +
+                "}"
     )
     @ApiResponses(
         value = [
@@ -50,8 +50,13 @@ class ReviewController {
     )
     @Authorize
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
-    fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
-        return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
+    fun addReview(
+        @ApiParam(value = "id of content who you want to review", example = "GladiatorID", required = true)
+        @RequestParam
+        titleId: String,
+        @Valid @RequestBody review: ReviewDTO
+    ): ResponseEntity<*>? {
+        return ResponseEntity.ok(reviewService.saveReview(titleId, review))
     }
 
     @ApiOperation(
@@ -68,7 +73,7 @@ class ReviewController {
     fun rate(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
-        @RequestBody valorationDTO: ValorationDTO
+        @Valid @RequestBody valorationDTO: ValorationDTO
     ): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.rate(reviewId, valorationDTO))
 
@@ -83,9 +88,8 @@ class ReviewController {
     fun report(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
-        @RequestBody reportDTO: ReportDTO
-    )
-            : ResponseEntity<*>? {
+        @Valid @RequestBody reportDTO: ReportDTO
+    ): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.report(reviewId, reportDTO))
     }
 
@@ -188,8 +192,3 @@ class ReviewController {
         return ResponseEntity.ok(reviewCacheService.performedSearchFor(titleId))
     }
 }
-
-data class CreateReviewRequest(
-    @ApiModelProperty(value = "titleId", example = "GladiatorID", required = true)
-    val titleId: String, val reviewToCreate: ReviewDTO
-)
