@@ -9,7 +9,6 @@ import ar.edu.unq.grupoN.backenddesappapi.service.PlatformAdminService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.RegisterRequest
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
-import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
 import com.github.javafaker.Faker
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
@@ -186,11 +185,8 @@ class FakeDataConfiguration {
                 )
             }
 
-            val createPublicReviewRequest = CreateReviewRequest(content.titleId, ReviewDTO.fromModel(publicReview))
-            reviewService.saveReview(createPublicReviewRequest)
-
-            val createPremiumReviewRequest = CreateReviewRequest(content.titleId, ReviewDTO.fromModel(premiumReview))
-            reviewService.saveReview(createPremiumReviewRequest)
+            reviewService.saveReview(content.titleId, ReviewDTO.fromModel(publicReview))
+            reviewService.saveReview(content.titleId, ReviewDTO.fromModel(premiumReview))
 
         }
     }
@@ -234,8 +230,7 @@ class FakeDataConfiguration {
         publicReview.id = 1
 
         cinematographicContentService.add(gladiatorMovie)
-        val createReviewRequest = CreateReviewRequest("GladiatorID", ReviewDTO.fromModel(publicReview))
-        reviewService.saveReview(createReviewRequest)
+        reviewService.saveReview(gladiatorMovie.titleId, ReviewDTO.fromModel(publicReview))
 
     }
 }
