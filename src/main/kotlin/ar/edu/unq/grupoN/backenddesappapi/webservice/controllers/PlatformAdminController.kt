@@ -54,9 +54,9 @@ class PlatformAdminController {
     fun userInfo(
         @ApiParam(hidden = true)
         @RequestHeader("Authentication")
-        apiKey: String
+        token: String
     ): ResponseEntity<*>? {
-        return ResponseEntity.ok(platformAdminService.findByToken(apiKey))
+        return ResponseEntity.ok(platformAdminService.findByToken(token))
     }
 
     @ApiOperation(

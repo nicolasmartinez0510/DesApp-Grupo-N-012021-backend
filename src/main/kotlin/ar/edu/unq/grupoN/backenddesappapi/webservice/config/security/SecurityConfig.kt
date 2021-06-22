@@ -25,6 +25,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http.authorizeRequests()
             .antMatchers("/api/user/me").authenticated()
+            .antMatchers("/api/user/subscribe").authenticated()
             .antMatchers("/api/user/**").permitAll()
             .anyRequest().permitAll()
             .and()
