@@ -13,7 +13,7 @@ import org.springframework.util.StopWatch
 
 @Aspect
 @Component
-@Order(0)
+@Order(1)
 class ApplicationAuditAspect {
     private val logger = LoggerFactory.getLogger(ApplicationAuditAspect::class.java)
 
