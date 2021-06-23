@@ -2,6 +2,7 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
 import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewCacheService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
@@ -189,6 +190,6 @@ class ReviewController {
         @RequestParam titleId: String
     ): ResponseEntity<*>? {
 
-        return ResponseEntity.ok(reviewCacheService.performedSearchFor(titleId))
+        return ResponseEntity.ok(reviewCacheService.obtain(titleId))
     }
 }

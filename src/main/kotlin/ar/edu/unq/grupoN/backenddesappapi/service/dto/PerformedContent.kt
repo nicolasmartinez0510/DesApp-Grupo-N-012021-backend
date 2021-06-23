@@ -1,21 +1,13 @@
 package ar.edu.unq.grupoN.backenddesappapi.service.dto
 
-import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
+import org.springframework.data.redis.core.RedisHash
 import java.io.Serializable
-import javax.persistence.Entity
 import javax.persistence.Id
 
-@Entity
+@RedisHash("fast-content")
 class PerformedContent(
     @Id
-    val titleId: String,
+    val id: String,
     val averageRating: Double,
-    val votesAmount: Int
-) : Serializable {
-
-    companion object {
-        fun from(content: CinematographicContent): PerformedContent {
-            return PerformedContent(content.titleId, content.averageRating, content.votesAmount)
-        }
-    }
-}
+    val votesAmount: Long
+) : Serializable
