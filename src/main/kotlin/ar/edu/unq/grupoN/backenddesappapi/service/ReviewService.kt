@@ -6,7 +6,6 @@ import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepo
 import ar.edu.unq.grupoN.backenddesappapi.persistence.PerformedContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
-import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.data.redis.listener.ChannelTopic
@@ -33,15 +32,15 @@ class ReviewService {
     private lateinit var topic: ChannelTopic
 
     @Transactional
-    fun saveReview(createReviewRequest: CreateReviewRequest): ReviewDTO {
-        val content = contentRepository.findById(createReviewRequest.titleId).get()
-        val review = createReviewRequest.reviewToCreate.toModel()
+    fun saveReview(titleId: String, reviewDTO: ReviewDTO): ReviewDTO {
+        val content = contentRepository.findById(titleId).get()
+        val review = reviewDTO.toModel()
         review.cinematographicContent = content
         review.validate()
 
         content.addRate(review)
 
-        return saveAndNotify(review, content, createReviewRequest)
+        return saveAndNotify(review, content, titleId)
     }
 
     @Transactional
@@ -80,13 +79,12 @@ class ReviewService {
     private fun saveAndNotify(
         review: Review,
         content: CinematographicContent,
-        createReviewRequest: CreateReviewRequest
+        titleId: String
     ): ReviewDTO {
         performedContentRepository.save(PerformedContent.from(content))
-        redisTemplate.convertAndSend(topic.topic, createReviewRequest.titleId)
+        redisTemplate.convertAndSend(topic.topic, titleId)
         return saveReview(review)
     }
 
     private fun saveReview(review: Review) = ReviewDTO.fromModel(reviewRepository.save(review))
 }
-
