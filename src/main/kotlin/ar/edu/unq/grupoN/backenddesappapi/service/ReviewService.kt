@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 
 @Service
@@ -81,8 +82,8 @@ class ReviewService {
     }
 
     @Transactional
-    fun allContentsBasicInfo(): MutableList<PerformedContent> {
-        return reviewRepository.allContentsBasicInfo()
+    fun contentsInfoAccessedAfter(lastWork: LocalDateTime?): MutableList<PerformedContent> {
+        return reviewRepository.contentsInfoAccessedAfter(lastWork)
     }
 
     private fun saveAndNotify(

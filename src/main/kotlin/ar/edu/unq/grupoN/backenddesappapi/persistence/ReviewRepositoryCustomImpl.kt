@@ -25,13 +25,17 @@ class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
     @Autowired
     private lateinit var em: EntityManager
 
-    override fun allContentsBasicInfo(): MutableList<PerformedContent> {
+    override fun contentsInfoAccessedAfter(lastWork: LocalDateTime?): MutableList<PerformedContent> {
         val cb = em.criteriaBuilder
         val cq: CriteriaQuery<PerformedContent> = cb.createQuery(PerformedContent::class.java)
         val review: Root<Review> = cq.from(Review::class.java)
         val reviewAndContent: Join<Review, CinematographicContent> = review.join("cinematographicContent")
 
         cq.groupBy(reviewAndContent.get<String>("titleId"))
+
+        if (lastWork != null) {
+            cq.having(cb.greaterThan(cb.max(review.get("date")), lastWork))
+        }
 
         cq.multiselect(
             reviewAndContent.get<String>("titleId"),
