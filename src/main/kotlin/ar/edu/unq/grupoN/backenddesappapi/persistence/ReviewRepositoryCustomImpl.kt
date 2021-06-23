@@ -86,8 +86,6 @@ class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
 
         val predicates: MutableList<Predicate> = ArrayList()
 
-        filterAverageRating(reverseSearchFilter, cb, reviewAndContent, predicates)
-
         if (reverseSearchFilter.genre != null) {
             addEqual(
                 predicates,
@@ -104,6 +102,12 @@ class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
 
         cq.where(*predicates.toTypedArray())
 
+        if (reverseSearchFilter.rating != null) {
+            cq.groupBy(reviewAndContent.get<String>("titleId"))
+            cq.having(cb.greaterThanOrEqualTo(cb.avg(review.get<Double>("rating")), reverseSearchFilter.rating))
+        }
+
+
         cq.select(review.get("cinematographicContent"))
             .distinct(true)
 
@@ -111,18 +115,6 @@ class ReviewRepositoryCustomImpl : ReviewRepositoryCustom {
 
         return query.resultList
 
-    }
-
-    private fun filterAverageRating(
-        reverseSearchFilter: ReverseSearchFilter,
-        cb: CriteriaBuilder,
-        reviewAndContent: Join<Review, CinematographicContent>,
-        predicates: MutableList<Predicate>
-    ) {
-        if (reverseSearchFilter.rating != null) {
-            val predicate = cb.greaterThanOrEqualTo(reviewAndContent.get("averageRating"), reverseSearchFilter.rating)
-            predicates.add(predicate)
-        }
     }
 
     private fun generateReviewFilters(

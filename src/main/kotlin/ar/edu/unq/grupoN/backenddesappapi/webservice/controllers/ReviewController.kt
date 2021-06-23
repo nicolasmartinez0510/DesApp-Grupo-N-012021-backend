@@ -2,11 +2,13 @@ package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
 import ar.edu.unq.grupoN.backenddesappapi.model.*
-import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewCacheService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
-import io.swagger.annotations.*
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.http.ResponseEntity
@@ -155,8 +157,8 @@ class ReviewController {
     @Authorize
     fun searchContent(
         @RequestParam
-        @ApiParam(value = "Select a rating required in a review")
-        reviewRating: Double?,
+        @ApiParam(value = "Select a content average rating")
+        contentRating: Double?,
         @RequestParam
         @ApiParam(value = "If you want well or badly valued reviews")
         wellValued: Boolean?,
@@ -177,7 +179,7 @@ class ReviewController {
         jobInContent: Employment?,
     ): ResponseEntity<*>? {
         val reverseSearchFilter = ReverseSearchFilter(
-            reviewRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
+            contentRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
         )
         return ResponseEntity.ok(reviewService.findContentBy(reverseSearchFilter))
     }
