@@ -15,19 +15,8 @@ class CinematographicContentService {
     @Autowired
     private lateinit var repository: CinematographicContentRepository
 
-    @Autowired
-    private lateinit var performedContentRepository: PerformedContentRepository
-
-    @Transactional
-    fun findById(titleId: String): Optional<CinematographicContent> {
-        return repository.findById(titleId)
-    }
-
     @Transactional
     fun add(cinematographicContent: CinematographicContent): CinematographicContent {
-        performedContentRepository.save(PerformedContent.from(cinematographicContent))
         return repository.save(cinematographicContent)
     }
-
-
 }

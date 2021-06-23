@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.listener.ChannelTopic
+import org.springframework.data.redis.listener.PatternTopic
 import org.springframework.data.redis.listener.RedisMessageListenerContainer
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter
 import org.springframework.stereotype.Component
@@ -38,9 +38,6 @@ class RedisConfig {
     }
 
     @Bean
-    fun topic(): ChannelTopic = ChannelTopic("pubsub:review-channel")
-
-    @Bean
     fun receiver(): ReceiverService = ReceiverService()
 
     @Bean
@@ -53,13 +50,12 @@ class RedisConfig {
     @Bean
     fun redisMessageContainer(
         lettuceConnectionFactory: LettuceConnectionFactory,
-        messageListenerAdapter: MessageListenerAdapter,
-        channelTopic: ChannelTopic,
+        newReviewListenerAdapter: MessageListenerAdapter,
         receiverService: ReceiverService
     ): RedisMessageListenerContainer {
         val container = RedisMessageListenerContainer()
         container.setConnectionFactory(lettuceConnectionFactory)
-        container.addMessageListener(messageListenerAdapter(receiverService), channelTopic)
+        container.addMessageListener(messageListenerAdapter(receiverService), PatternTopic("pubsub:review-channel"))
         return container
     }
 

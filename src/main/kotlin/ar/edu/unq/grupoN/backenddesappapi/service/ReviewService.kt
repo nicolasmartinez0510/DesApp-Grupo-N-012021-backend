@@ -1,16 +1,14 @@
 package ar.edu.unq.grupoN.backenddesappapi.service
 
-import ar.edu.unq.grupoN.backenddesappapi.model.imdb.CinematographicContent
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.PerformedContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.redis.core.RedisTemplate
-import org.springframework.data.redis.listener.ChannelTopic
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 
 @Service
@@ -20,16 +18,10 @@ class ReviewService {
     private lateinit var reviewRepository: ReviewRepository
 
     @Autowired
-    private lateinit var performedContentRepository: PerformedContentRepository
-
-    @Autowired
     private lateinit var contentRepository: CinematographicContentRepository
 
     @Autowired
     private lateinit var redisTemplate: RedisTemplate<String, Any>
-
-    @Autowired
-    private lateinit var topic: ChannelTopic
 
     @Transactional
     fun saveReview(titleId: String, reviewDTO: ReviewDTO): ReviewDTO {
@@ -38,9 +30,7 @@ class ReviewService {
         review.cinematographicContent = content
         review.validate()
 
-        content.addRate(review)
-
-        return saveAndNotify(review, content, titleId)
+        return saveAndNotify(review, titleId)
     }
 
     @Transactional
@@ -73,16 +63,34 @@ class ReviewService {
     @Transactional
     fun findContentBy(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContentDTO> {
         return reviewRepository.findContentInReverseSearch(reverseSearchFilter)
-            .map { CinematographicContentDTO.fromModel(it) }
+            .map {
+                val model = CinematographicContentDTO.fromModel(it)
+                if (model.isMovie()) {
+                    val movie = model as MovieDTO
+                    val info = reviewRepository.contentBasicInfo(movie.titleId)
+                    movie.rating = info.averageRating
+                    movie.votesAmount = info.votesAmount
+                    movie
+                } else {
+                    val serie = model as SerieDTO
+                    val info = reviewRepository.contentBasicInfo(serie.titleId)
+                    serie.rating = info.averageRating
+                    serie.votesAmount = info.votesAmount
+                    serie
+                }
+            }
+    }
+
+    @Transactional
+    fun contentsInfoAccessedAfter(lastWork: LocalDateTime?): MutableList<PerformedContent> {
+        return reviewRepository.contentsInfoAccessedAfter(lastWork)
     }
 
     private fun saveAndNotify(
         review: Review,
-        content: CinematographicContent,
         titleId: String
     ): ReviewDTO {
-        performedContentRepository.save(PerformedContent.from(content))
-        redisTemplate.convertAndSend(topic.topic, titleId)
+        redisTemplate.convertAndSend("pubsub:review-channel", titleId)
         return saveReview(review)
     }
 

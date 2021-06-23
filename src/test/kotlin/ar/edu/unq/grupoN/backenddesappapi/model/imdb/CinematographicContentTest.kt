@@ -32,27 +32,6 @@ class CinematographicContentTest {
             .isEqualTo(listOf(season))
     }
 
-    @Test
-    fun `a content can be rated by a review and obtain one more votes amount`(){
-        val votesBeforeRate = gladiator.votesAmount
-
-        gladiator.addRate(factory.aPublicReview())
-
-        assertThat(gladiator.votesAmount).isEqualTo(votesBeforeRate + 1)
-    }
-
-    @Test
-    fun `a content can be rated by a review have new rating and sum votes`(){
-        val sumVotesBeforeRate = gladiator.sumVotes
-        val ratingBeforeRate = gladiator.sumVotes
-
-        gladiator.addRate(factory.aPublicReview())
-        gladiator.addRate(factory.aPublicReview())
-
-        assertThat(gladiator.sumVotes).isEqualTo(sumVotesBeforeRate + 3 + 3)
-        assertThat(gladiator.averageRating).isEqualTo(ratingBeforeRate + 3)
-    }
-
     private fun a_season(): Season {
         val episode = Episode(1)
         episode.id = 3
