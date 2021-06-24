@@ -44,20 +44,28 @@ data class LoginCredentialsRequest(
 
 @ApiModel(description = "Represents a user platform information.")
 class PlatformAdminInfo(
-    val id: Long,
     val apiKey: String,
-    val email: String,
     val username: String,
-    val platform: Platform
+    val email: String,
+    val platform: Platform,
+    val addReview: Int,
+    val report: Int,
+    val rate: Int,
+    val search: Int,
+    val contentSearch: Int
 ) {
     companion object {
         fun fromModel(platformAdminModel: PlatformAdministrator): PlatformAdminInfo {
             return PlatformAdminInfo(
-                platformAdminModel.id!!,
                 platformAdminModel.uuid!!,
-                platformAdminModel.email,
                 platformAdminModel.username,
-                platformAdminModel.platform
+                platformAdminModel.email,
+                platformAdminModel.platform,
+                platformAdminModel.addReview,
+                platformAdminModel.report,
+                platformAdminModel.rate,
+                platformAdminModel.search,
+                platformAdminModel.contentSearch
             )
         }
     }

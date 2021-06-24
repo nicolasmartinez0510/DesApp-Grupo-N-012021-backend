@@ -1,5 +1,6 @@
 package ar.edu.unq.grupoN.backenddesappapi.service
 
+import ar.edu.unq.grupoN.backenddesappapi.model.Metric
 import ar.edu.unq.grupoN.backenddesappapi.model.Platform
 import ar.edu.unq.grupoN.backenddesappapi.model.PlatformAdministrator
 import ar.edu.unq.grupoN.backenddesappapi.model.encript
@@ -103,6 +104,13 @@ class PlatformAdminService {
     @Transactional
     fun existsByUsernameAndPlatform(username: String, platform: Platform) =
         repository.existsByUsernameAndPlatform(username, platform)
+
+    @Transactional
+    fun addMetric(apiKey: String,metric: Metric){
+        val user: PlatformAdministrator = repository.findByUuid(apiKey)
+        user.addMetric(metric)
+        repository.save(user)
+    }
 
     private fun generateToken(id: Long, username: String, platform: String): String {
         val secretKey = "reseniaNGroupSecretKey"

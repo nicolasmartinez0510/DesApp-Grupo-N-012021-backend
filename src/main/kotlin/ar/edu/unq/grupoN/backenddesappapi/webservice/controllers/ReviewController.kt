@@ -1,6 +1,7 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
+import ar.edu.unq.grupoN.backenddesappapi.aspect.UserMetric
 import ar.edu.unq.grupoN.backenddesappapi.model.*
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewCacheService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
@@ -52,6 +53,7 @@ class ReviewController {
             ApiResponse(code = 400, message = "Bad request in fields")]
     )
     @Authorize
+    @UserMetric
     @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     fun addReview(
         @ApiParam(value = "id of content who you want to review", example = "GladiatorID", required = true)
@@ -73,6 +75,7 @@ class ReviewController {
     )
     @RequestMapping(value = ["/rate/{reviewId}"], method = [RequestMethod.POST])
     @Authorize
+    @UserMetric
     fun rate(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
@@ -88,6 +91,7 @@ class ReviewController {
                 "his/him report was the last who he/she sent."
     )
     @Authorize
+    @UserMetric
     fun report(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
@@ -99,7 +103,8 @@ class ReviewController {
     @ApiOperation(value = "Search reviews on a specific titleId content with filters.")
     @RequestMapping(value = ["/search"], method = [RequestMethod.GET])
     @Authorize
-    fun getReviewsFrom(
+    @UserMetric
+    fun search(
         @ApiParam(value = "wanted content's titleId", example = "GladiatorID", required = true)
         @RequestParam
         titleId: String,
@@ -155,7 +160,8 @@ class ReviewController {
     @ApiOperation(value = "Search a content by filters")
     @RequestMapping(value = ["/searchContent"], method = [RequestMethod.GET])
     @Authorize
-    fun searchContent(
+    @UserMetric
+    fun contentSearch(
         @RequestParam
         @ApiParam(value = "Select a content average rating")
         contentRating: Double?,

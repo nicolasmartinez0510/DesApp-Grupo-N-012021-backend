@@ -65,3 +65,7 @@ enum class Sort {
 enum class ReportType {
     OFFENSIVE, SPAM, UGLYWORDS, RACISM, XENOPHOBIA, SPOILER
 }
+
+enum class Metric {
+    ADDREVIEW , RATE , SEARCH , REPORT , CONTENTSEARCH
+}
