@@ -17,8 +17,23 @@ class PlatformAdministrator(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
-
     var uuid: String? = null
+    var addReview: Int = 0
+    var report: Int = 0
+    var rate: Int = 0
+    var search: Int = 0
+    var contentSearch: Int = 0
+
+
+    fun addMetric(metric: Metric){
+        when(metric){
+            Metric.ADDREVIEW -> addReview += 1
+            Metric.REPORT -> report += 1
+            Metric.SEARCH -> search += 1
+            Metric.RATE -> rate += 1
+            Metric.CONTENTSEARCH -> contentSearch += 1
+        }
+    }
 }
 
 

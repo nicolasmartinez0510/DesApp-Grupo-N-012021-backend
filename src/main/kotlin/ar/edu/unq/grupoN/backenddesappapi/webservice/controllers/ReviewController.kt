@@ -1,14 +1,20 @@
 package ar.edu.unq.grupoN.backenddesappapi.webservice.controllers
 
 import ar.edu.unq.grupoN.backenddesappapi.aspect.Authorize
+import ar.edu.unq.grupoN.backenddesappapi.aspect.UserMetric
 import ar.edu.unq.grupoN.backenddesappapi.model.*
+import ar.edu.unq.grupoN.backenddesappapi.service.ReviewCacheService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
-import io.swagger.annotations.*
+import io.swagger.annotations.ApiOperation
+import io.swagger.annotations.ApiParam
+import io.swagger.annotations.ApiResponse
+import io.swagger.annotations.ApiResponses
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import javax.validation.Valid
 
 
 @ServiceREST
@@ -19,35 +25,43 @@ class ReviewController {
     @Autowired
     private lateinit var reviewService: ReviewService
 
+    @Autowired
+    private lateinit var reviewCacheService: ReviewCacheService
+
     @ApiOperation(
         value = "Create a new review about a specific content. Check Models section to know all kinds of reviews types and structures. " +
                 "Aditionally, you must insert property '@type' on the review object, with value 'PUBLIC' or 'PREMIUM'." +
-                " Try this example: {\n" +
-                "\n" +
-                "  \"titleId\": \"GladiatorID\",\n" +
-                "  \"reviewToCreate\": {\n" +
-                "\"@type\":\"PUBLIC\",\n" +
-                "\"platform\":\"PLEX\",\n" +
-                "\"language\":\"ENGLISH\",\n" +
-                "\"resumeText\":\"I love this movie.\",\n" +
+                " Try this example: " +
+                "{ \n" +
+                "\"@type\":\"PUBLIC\", \n" +
+                "\"platform\":\"PLEX\", \n" +
+                "\"language\":\"ENGLISH\", \n" +
+                "\"resumeText\":\"I love this movie.\", \n" +
                 "\"text\":\"Is the best in the world, the true masterpiece!!\",\n" +
                 "\"rating\": 5.0,\n" +
-                "\"date\":\"2016-05-23T14:43:39.354\",\n" +
+                "\"date\":\"2020-05-23T14:43:39.354\",\n" +
                 "\"reviewType\":\"MOVIE\",\n" +
                 "\"includeSpoiler\":true,\n" +
-                "\"userId\":\"chesteroide1\",\n" +
+                "\"userId\":\"nicodyj001\",\n" +
                 "\"username\":\"chester.oide\",\n" +
-                "\"geographicLocation\":\"ARGENTINA\"} }"
+                "\"geographicLocation\":\"ARGENTINA\"\n" +
+                "}"
     )
     @ApiResponses(
         value = [
             ApiResponse(code = 200, message = "Review created succesfully"),
             ApiResponse(code = 400, message = "Bad request in fields")]
     )
-    @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
     @Authorize
-    fun addReview(@RequestBody createReviewRequest: CreateReviewRequest): ResponseEntity<*>? {
-        return ResponseEntity.ok(reviewService.saveReview(createReviewRequest))
+    @UserMetric
+    @RequestMapping(value = ["/add"], method = [RequestMethod.POST])
+    fun addReview(
+        @ApiParam(value = "id of content who you want to review", example = "GladiatorID", required = true)
+        @RequestParam
+        titleId: String,
+        @Valid @RequestBody review: ReviewDTO
+    ): ResponseEntity<*>? {
+        return ResponseEntity.ok(reviewService.saveReview(titleId, review))
     }
 
     @ApiOperation(
@@ -61,10 +75,11 @@ class ReviewController {
     )
     @RequestMapping(value = ["/rate/{reviewId}"], method = [RequestMethod.POST])
     @Authorize
+    @UserMetric
     fun rate(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
-        @RequestBody valorationDTO: ValorationDTO
+        @Valid @RequestBody valorationDTO: ValorationDTO
     ): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.rate(reviewId, valorationDTO))
 
@@ -76,19 +91,20 @@ class ReviewController {
                 "his/him report was the last who he/she sent."
     )
     @Authorize
+    @UserMetric
     fun report(
         @ApiParam(value = "id of review who you want to report", example = "1", required = true)
         @PathVariable reviewId: Long,
-        @RequestBody reportDTO: ReportDTO
-    )
-    : ResponseEntity<*>? {
+        @Valid @RequestBody reportDTO: ReportDTO
+    ): ResponseEntity<*>? {
         return ResponseEntity.ok(reviewService.report(reviewId, reportDTO))
     }
 
     @ApiOperation(value = "Search reviews on a specific titleId content with filters.")
     @RequestMapping(value = ["/search"], method = [RequestMethod.GET])
     @Authorize
-    fun getReviewsFrom(
+    @UserMetric
+    fun search(
         @ApiParam(value = "wanted content's titleId", example = "GladiatorID", required = true)
         @RequestParam
         titleId: String,
@@ -144,10 +160,11 @@ class ReviewController {
     @ApiOperation(value = "Search a content by filters")
     @RequestMapping(value = ["/searchContent"], method = [RequestMethod.GET])
     @Authorize
-    fun searchContent(
+    @UserMetric
+    fun contentSearch(
         @RequestParam
-        @ApiParam(value = "Select a rating required in a review")
-        reviewRating: Double?,
+        @ApiParam(value = "Select a content average rating")
+        contentRating: Double?,
         @RequestParam
         @ApiParam(value = "If you want well or badly valued reviews")
         wellValued: Boolean?,
@@ -168,19 +185,19 @@ class ReviewController {
         jobInContent: Employment?,
     ): ResponseEntity<*>? {
         val reverseSearchFilter = ReverseSearchFilter(
-            reviewRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
+            contentRating, wellValued, genre, decade, isAdultContent, searchCastMember, jobInContent
         )
         return ResponseEntity.ok(reviewService.findContentBy(reverseSearchFilter))
     }
 
-    @ApiOperation(value = "Endpoint used for api develop. to show generated fake reviews", hidden = true)
-    @RequestMapping(value = ["", "/"], method = [RequestMethod.GET])
-    fun reviews(): ResponseEntity<*>? {
-        return ResponseEntity.ok(reviewService.findAll())
+    @ApiOperation(value = "Find basic information from a content with high performance.")
+    @RequestMapping(value = ["/performed-search-content"], method = [RequestMethod.GET])
+    @Authorize
+    fun performantContentSearch(
+        @ApiParam(example = "GladiatorID")
+        @RequestParam titleId: String
+    ): ResponseEntity<*>? {
+
+        return ResponseEntity.ok(reviewCacheService.obtain(titleId))
     }
 }
-
-data class CreateReviewRequest(
-    @ApiModelProperty(value = "titleId", example = "GladiatorID", required = true)
-    val titleId: String, val reviewToCreate: ReviewDTO
-)

@@ -58,9 +58,8 @@ class Factory {
             "SPTKSukq4sk893", "Spartacus",
             titleType, isAdult, 2010, runtimeMinutes
         )
-        val rating = RatingInfo(averageRating, numVotes)
         val serieInfo = SerieInfo(2013, listOf())
-        val spartacus = Serie(basicInformation, cast, rating, serieInfo)
+        val spartacus = Serie(basicInformation, cast, serieInfo)
         spartacus.seasons = listOf(seasons)
         spartacus.endYear = 2013
 
@@ -72,17 +71,14 @@ class Factory {
             "GLADIIiiatoor45", "Gladiator",
             titleType, isAdult, startYear, runtimeMinutes
         )
-        val rating = RatingInfo(averageRating, numVotes)
-
-        return Movie(basicInformation, cast, rating)
+        return Movie(basicInformation, cast)
     }
 
     fun genericCastMember(): CastMember {
-        val russell = CastMember(
+        return CastMember(
             "Russell Crowe", Employment.ACTOR,
             null, "Maximus", 9999, 9999
         )
-        return russell
     }
 
     //Objects atibutes

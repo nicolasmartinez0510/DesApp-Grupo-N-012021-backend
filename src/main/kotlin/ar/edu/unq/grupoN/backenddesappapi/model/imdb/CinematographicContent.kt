@@ -1,7 +1,7 @@
 package ar.edu.unq.grupoN.backenddesappapi.model.imdb
 
 import ar.edu.unq.grupoN.backenddesappapi.model.BasicInformation
-import ar.edu.unq.grupoN.backenddesappapi.model.RatingInfo
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.SubscribedUrl
 import javax.persistence.*
 
 @Entity
@@ -9,6 +9,7 @@ import javax.persistence.*
 abstract class CinematographicContent(){
     @Id
     open var titleId: String = ""
+
     open var title: String = ""
     open var titleType: String = ""
     open var isAdultContent: Boolean = false
@@ -17,30 +18,25 @@ abstract class CinematographicContent(){
     @OneToMany(cascade = [CascadeType.ALL])
     @JoinColumn(name = "party_id")
     open var cast: MutableList<CastMember> = mutableListOf()
-    open var averageRating: Double = 0.0
-    open var votesAmount: Int = 0
+    @OneToMany(cascade = [CascadeType.ALL])
+    open var subscribers: MutableList<SubscribedUrl> = mutableListOf()
 
-    constructor(basicInformation: BasicInformation, cast: MutableList<CastMember>, rating: RatingInfo): this(){
+    constructor(basicInformation: BasicInformation, cast: MutableList<CastMember>): this(){
         this.cast = cast
-        set_basic_information(basicInformation)
-        set_rating(rating)
-
+        setBasicInformation(basicInformation)
     }
 
     open fun isSerie() = false
 
-    private fun set_basic_information(basicInformation: BasicInformation) {
+    fun addToSubscribers(subscribedSubscribedUrl: SubscribedUrl) = subscribers.add(subscribedSubscribedUrl)
+
+    private fun setBasicInformation(basicInformation: BasicInformation) {
         this.titleId = basicInformation.titleId
         this.title = basicInformation.title
         this.titleType = basicInformation.titleType
         this.isAdultContent = basicInformation.isAdultContent
         this.startYear = basicInformation.startYear
         this.runtimeMinutes = basicInformation.runtimeMinutes
-    }
-
-    private fun set_rating(rating: RatingInfo) {
-        this.averageRating = rating.averageRating
-        this.votesAmount = rating.votesAmount
     }
 
     open fun haveEpisode(seasonNumber: Int?, episodeNumber: Int?) = false

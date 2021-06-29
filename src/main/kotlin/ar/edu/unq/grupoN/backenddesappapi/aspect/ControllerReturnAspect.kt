@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Aspect
 @Component
-@Order(2)
+@Order(3)
 class ControllerReturnAspect {
     @Around("execution(* ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.*.*(..))")
     fun manageReturn(proceedingJoinPoint: ProceedingJoinPoint): Any {

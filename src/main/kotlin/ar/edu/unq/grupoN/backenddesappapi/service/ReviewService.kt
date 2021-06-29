@@ -3,40 +3,39 @@ package ar.edu.unq.grupoN.backenddesappapi.service
 import ar.edu.unq.grupoN.backenddesappapi.model.review.Review
 import ar.edu.unq.grupoN.backenddesappapi.persistence.CinematographicContentRepository
 import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepository
-import ar.edu.unq.grupoN.backenddesappapi.persistence.ReviewRepositoryCustomImpl
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.*
-import ar.edu.unq.grupoN.backenddesappapi.webservice.controllers.CreateReviewRequest
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.redis.core.RedisTemplate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 
 @Service
 class ReviewService {
 
     @Autowired
-    private lateinit var basicReviewRepository: ReviewRepository
-
-    @Autowired
-    private lateinit var customReviewRepository: ReviewRepositoryCustomImpl
+    private lateinit var reviewRepository: ReviewRepository
 
     @Autowired
     private lateinit var contentRepository: CinematographicContentRepository
 
-    @Transactional
-    fun saveReview(createReviewRequest: CreateReviewRequest): ReviewDTO {
-        val content = contentRepository.findById(createReviewRequest.titleId).get()
-        val review = createReviewRequest.reviewToCreate.toModel()
-        review.cinematographicContent = content
+    @Autowired
+    private lateinit var redisTemplate: RedisTemplate<String, Any>
 
+    @Transactional
+    fun saveReview(titleId: String, reviewDTO: ReviewDTO): ReviewDTO {
+        val content = contentRepository.findById(titleId).get()
+        val review = reviewDTO.toModel()
+        review.cinematographicContent = content
         review.validate()
 
-        return saveReview(review)
+        return saveAndNotify(review, titleId)
     }
 
     @Transactional
     fun rate(reviewId: Long, valorationDTO: ValorationDTO): ReviewDTO {
-        val review: Review = basicReviewRepository.findById(reviewId).get()
+        val review: Review = reviewRepository.findById(reviewId).get()
 
         review.rate(valorationDTO.userId, valorationDTO.platform, valorationDTO.valoration)
 
@@ -45,36 +44,55 @@ class ReviewService {
 
     @Transactional
     fun report(reviewId: Long, reportDTO: ReportDTO): ReviewDTO {
-        val review: Review = basicReviewRepository.findById(reviewId).get()
-        if(!review.isPublic) throw RuntimeException("Cannot report a premium review.")
+        val review: Review = reviewRepository.findById(reviewId).get()
+        if (!review.isPublic) throw RuntimeException("Cannot report a premium review.")
         review.report(reportDTO.userId, reportDTO.platform, reportDTO.reportType)
 
         return saveReview(review)
     }
 
     @Transactional
-    fun findContentBy(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContentDTO> {
-        return customReviewRepository.findContentInReverseSearch(reverseSearchFilter)
-            .map { CinematographicContentDTO.fromModel(it) }
-    }
-
-    @Transactional
     fun search(titleId: String, applicableFilters: ApplicableFilters): List<ReviewDTO> {
         val content = contentRepository.findById(titleId).get()
 
-        val reviews = customReviewRepository.findReviews(content, applicableFilters)
+        val reviews = reviewRepository.findReviews(content, applicableFilters)
 
         return reviews.map { ReviewDTO.fromModel(it) }
     }
 
     @Transactional
-    fun addFakeReview(review: Review) {
-        basicReviewRepository.save(review)
+    fun findContentBy(reverseSearchFilter: ReverseSearchFilter): List<CinematographicContentDTO> {
+        return reviewRepository.findContentInReverseSearch(reverseSearchFilter)
+            .map {
+                val model = CinematographicContentDTO.fromModel(it)
+                if (model.isMovie()) {
+                    val movie = model as MovieDTO
+                    val info = reviewRepository.contentBasicInfo(movie.titleId)
+                    movie.rating = info.averageRating
+                    movie.votesAmount = info.votesAmount
+                    movie
+                } else {
+                    val serie = model as SerieDTO
+                    val info = reviewRepository.contentBasicInfo(serie.titleId)
+                    serie.rating = info.averageRating
+                    serie.votesAmount = info.votesAmount
+                    serie
+                }
+            }
     }
 
     @Transactional
-    fun findAll(): List<ReviewDTO> = basicReviewRepository.findAll().map { ReviewDTO.fromModel(it) }
+    fun contentsInfoAccessedAfter(lastWork: LocalDateTime?): MutableList<PerformedContent> {
+        return reviewRepository.contentsInfoAccessedAfter(lastWork)
+    }
 
+    private fun saveAndNotify(
+        review: Review,
+        titleId: String
+    ): ReviewDTO {
+        redisTemplate.convertAndSend("pubsub:review-channel", titleId)
+        return saveReview(review)
+    }
 
-    private fun saveReview(review: Review) = ReviewDTO.fromModel(basicReviewRepository.save(review))
+    private fun saveReview(review: Review) = ReviewDTO.fromModel(reviewRepository.save(review))
 }

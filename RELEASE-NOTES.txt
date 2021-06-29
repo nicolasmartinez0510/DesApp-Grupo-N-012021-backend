@@ -37,3 +37,23 @@ NOTES:
 
 KNOWN ISSUES:
 * -
+
+------------------------------------------------------------------------------------
+TAG ENTREGA 3.0
+------------------------------------------------------------------------------------
+NEW FEATURES:
+ * introduces architecture tests.
+ * web services audit.
+ * build backend.
+ * Validations in client-server forms and site transactions.
+ * high performance service.
+ * functionality for the platform administrator to be notified of new reviews.
+ * model coverage +90%.
+ * created endpoints: subscribe, performantContentSearch.
+
+NOTES:
+* redis creates a 7gb temporary file when running api.
+* embedded redis remains open occupying a port(6379).
+
+KNOWN ISSUES:
+* -

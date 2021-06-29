@@ -8,6 +8,7 @@ import ar.edu.unq.grupoN.backenddesappapi.service.CinematographicContentService
 import ar.edu.unq.grupoN.backenddesappapi.service.PlatformAdminService
 import ar.edu.unq.grupoN.backenddesappapi.service.ReviewService
 import ar.edu.unq.grupoN.backenddesappapi.service.dto.RegisterRequest
+import ar.edu.unq.grupoN.backenddesappapi.service.dto.ReviewDTO
 import com.github.javafaker.Faker
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.CommandLineRunner
@@ -63,7 +64,6 @@ class FakeDataConfiguration {
                 Serie(
                     basicInformation = getBasicInformation(),
                     cast = getCastMembers(5),
-                    rating = getRatingInfo(),
                     serieInfo = serieInfo
                 )
 
@@ -87,7 +87,6 @@ class FakeDataConfiguration {
                 Movie(
                     basicInformation = getBasicInformation(),
                     cast = getCastMembers(faker.number().numberBetween(5, 8)),
-                    rating = getRatingInfo()
                 )
 
             cinematographicContentService.add(newMovie)
@@ -126,11 +125,6 @@ class FakeDataConfiguration {
         }
         return cast
     }
-
-    private fun getRatingInfo() = RatingInfo(
-        averageRating = faker.number().randomDouble(2, 3, 10),
-        votesAmount = faker.number().numberBetween(2, 9999989)
-    )
 
     private fun genericCastMember(name: String, employment: Employment): CastMember {
         return CastMember(
@@ -191,8 +185,8 @@ class FakeDataConfiguration {
                 )
             }
 
-            reviewService.addFakeReview(publicReview)
-            reviewService.addFakeReview(premiumReview)
+            reviewService.saveReview(content.titleId, ReviewDTO.fromModel(publicReview))
+            reviewService.saveReview(content.titleId, ReviewDTO.fromModel(premiumReview))
 
         }
     }
@@ -207,7 +201,6 @@ class FakeDataConfiguration {
             Movie(
                 basicInformation = getBasicInformation(),
                 cast = cast,
-                rating = getRatingInfo()
             )
 
         val reviewInfo = ReviewInfo(
@@ -237,7 +230,7 @@ class FakeDataConfiguration {
         publicReview.id = 1
 
         cinematographicContentService.add(gladiatorMovie)
-        reviewService.addFakeReview(publicReview)
+        reviewService.saveReview(gladiatorMovie.titleId, ReviewDTO.fromModel(publicReview))
 
     }
 }

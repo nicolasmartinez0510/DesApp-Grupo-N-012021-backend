@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse
 
 @Aspect
 @Component
-@Order(1)
+@Order(0)
 class AuthorizationCheckerAspect {
 
     @Autowired
